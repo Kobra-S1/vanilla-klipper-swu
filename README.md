@@ -2,6 +2,14 @@
 
 This readme explains how to install and enable the **vanilla Klipper (VK)** app on the Anycubic Kobra S1 running **Rinkhals**.
 
+# WARNING !
+
+This is a experimental vanilla-klipper testbuild for KOBRA-S1,with a experimental CS1237 and probing module.
+Some hw features will currently not work at all (e.g. LIS2DW12, filament runout, ACE Pro, etc.).
+
+Also its only accessable properly via Mainsail Webinterface, no Klipper-Screen available on display.
+
+Especially at first startup and first homing look if homing works properly and (virtual) endstop switches are engaging, if not hit EMERGENCY STOP or switch power-off.
 ---
 
 ## 📋 Preconditions
