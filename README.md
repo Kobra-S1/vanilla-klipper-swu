@@ -33,9 +33,9 @@ This readme explains how to install and enable the **vanilla Klipper (VK)** app 
    Settings → General → Rinkhals → Manage apps
    ```
 
-   ![settings rinkhals](images\1_settigns_rinkhals.png)  
-   ![rinkhals manage apps](images\2_rinkhals_manage_apps.png)  
-   ![vanilla klipper entry](images\3_rinkhals_manage_apps_vanilla_klipper.png)
+   ![settings rinkhals](images/1_settigns_rinkhals.png)  
+   ![rinkhals manage apps](images/2_rinkhals_manage_apps.png)  
+   ![vanilla klipper entry](images/3_rinkhals_manage_apps_vanilla_klipper.png)
 
    - You should now see **`vanilla-klipper`** in the list (without a checkmark).
 
@@ -49,7 +49,7 @@ You have two options:
 - Either enable the checkbox next to **`vanilla-klipper`** or in the vanilla-klipper settins itself
 - Click **Enable App** → **Start App** 
 - VK will now run every time the printer boots.  
-![enabled vanilla klipper](images\7_rinkhals_manage_apps_enable_app.png)  
+![enabled vanilla klipper](images/7_rinkhals_manage_apps_enable_app.png)  
 
 ### 2. Temporary (only for this session)
 - Click on **`vanilla-klipper`** entry.  
@@ -57,7 +57,7 @@ You have two options:
 - VK runs until reboot. After power-cycle, Rinkhals with GoKlipper will start again.  
 
 Screenshots:  
-![enable start app](images\4_rinkhals_manage_apps_enable_start_app.png)  
+![enable start app](images/4_rinkhals_manage_apps_enable_start_app.png)  
 ![running vanilla klipper](images\6_rinkhals_manage_apps__start_app_cpu.png)  
 
 ---
