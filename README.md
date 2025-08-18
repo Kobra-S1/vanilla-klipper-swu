@@ -46,7 +46,7 @@ This readme explains how to install and enable the **vanilla Klipper (VK)** app 
 You have two options:
 
 ### 1. Permanent (default at boot)
-- Either enable the checkbox next to **`vanilla-klipper`** or in the vanilla-klipper settins itself
+- Either enable the checkbox next to **`vanilla-klipper`** or in the vanilla-klipper settings itself
 - Click **Enable App** → **Start App** 
 - VK will now run every time the printer boots.  
 ![enabled vanilla klipper](images/7_rinkhals_manage_apps_enable_app.png)  
@@ -92,7 +92,7 @@ During installation, two config files are added to the standard config directory
 
 ## ⚠️ Important G-code Warning
 
-Just slicing with the **K1S profile in OrcaSlicer** and sending directly **will not work**.  
+Just slicing with the **KS1 profile in OrcaSlicer** and sending directly **will not work**.  
 - You must provide a **proper startup G-code sequence** in your slicer.  
 - Without it, you’ll get:
   ```
@@ -102,5 +102,9 @@ Just slicing with the **K1S profile in OrcaSlicer** and sending directly **will 
 Since GoKlipper is gone, so are its features (auto-leveling, wiping, reversed YX homing, startup macros).  
 👉 You must provide your own homing and startup sequences in `printer.klipper.cfg`.
 
+As startup help, I frankensteined ENDER5 and KS1 specifics together to get startup gcode. Its not optimized or perfect by anyway, but its good enough to get a benchy printed. ;)
+(releases/KS1/KS1_WIP_StartupGCode.txt)  
+
+Copy&paste that into your slicers StartUp Gcode section.
 ---
- 
+    
