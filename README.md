@@ -58,7 +58,7 @@ You have two options:
 
 Screenshots:  
 ![enable start app](images/4_rinkhals_manage_apps_enable_start_app.png)  
-![running vanilla klipper](images\6_rinkhals_manage_apps__start_app_cpu.png)  
+![running vanilla klipper](images/6_rinkhals_manage_apps__start_app_cpu.png)  
 
 ---
 
@@ -103,7 +103,8 @@ Since GoKlipper is gone, so are its features (auto-leveling, wiping, reversed YX
 👉 You must provide your own homing and startup sequences in `printer.klipper.cfg`.
 
 As startup help, I frankensteined ENDER5 and KS1 specifics together to get startup gcode. Its not optimized or perfect by anyway, but its good enough to get a benchy printed. ;)
-(releases/KS1/KS1_WIP_StartupGCode.txt)  
+
+[releases/KS1/KS1_WIP_StartupGCode.txt]
 
 Copy&paste that into your slicers StartUp Gcode section.
 ---
