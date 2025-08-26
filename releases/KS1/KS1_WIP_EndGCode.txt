@@ -1,0 +1,13 @@
+G92 E0
+G1 E-2 F3000
+{if max_layer_z < max_print_height-1}G1 Z{z_offset+min(max_layer_z+2, max_print_height)} F900 ; Move print head further up{endif} 
+G1 F12000; present print
+TO_THROW_POSITION                      ; move into purge corner
+M140 S0 ; turn off heatbed
+M104 S0 ; turn off temperature
+M106 P1 S0 ; turn off fan
+M106 P2 S0
+M106 P3 S0
+M107 ; Part cooling fan OFF
+M84; disable motors                  
+
