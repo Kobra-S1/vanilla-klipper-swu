@@ -1,119 +1,21 @@
-# Test builds of Vanilla Klipper APP for Rinkhals on Anycubic Kobra S1 
+# Test builds of Vanilla Klipper and Tunneled-Klipper APPs for Rinkhals on Anycubic Kobra S1
 
-This readme explains how to install and enable the **vanilla Klipper (VK)** app on the Anycubic Kobra S1 running **Rinkhals**.
+This repository contains experimental test builds of:
 
-# WARNING !
-
-This is a experimental vanilla-klipper testbuild for KOBRA-S1,with a experimental CS1237 and probing module.
-Some hw features will currently not work at all (e.g. LIS2DW12, filament runout, ACE Pro, etc.).
-
-Also its only accessable properly via Mainsail Webinterface, no Klipper-Screen available on display.
-
-Especially at first startup and first homing look if homing works properly and (virtual) endstop switches are engaging, if not hit EMERGENCY STOP or switch power-off.
----
-
-## 📋 Preconditions
-- Anycubic Kobra S1 (**K1S**) with **Rinkhals** already installed and running.  
-- Update file from release\KS1 foldern like e.g. `ks1_vanilla_klipper_app_v0.1_update.swu`
+- **[Vanilla-Klipper](vanilla-klipper.md)** → Run Klipper natively on the Anycubic Kobra S1 SoC under Rinkhals.
+- **[Tunneled-Klipper](tunneled-klipper.md)** → Instead of running Klipper on the printer SoC, forward serial comms over USB gadget mode to a Raspberry Pi 4.
 
 ---
 
-## 🚀 Installation Steps
+## ⚠️ General Notes
 
-1. **Prepare update file**
-   - Rename  
-     ```bash
-     ks1_vanilla_klipper_app_v0.1_update.swu → update.swu
-     ```
-   - Copy it to your USB drive at the usual update location:
-     ```
-     aGVscF9zb3Nf/update.swu
-     ```
+- These builds are **experimental**.  
+- Some hardware features may not work or may only function when combined with tunneled-klipper + RPi4 (e.g., LIS2DW12 resonance testing).  
+- Currently only **Mainsail Web Interface** is supported (no KlipperScreen on display).
 
-2. **Plug USB drive into printer**
-   - First beep → copying files starts  
-   - Second beep → copying finished  
-   - You may remove the USB stick after the second beep.
+👉 Choose your setup:
 
-3. **Open Rinkhals App menu**  
-   Navigate on the printer:  
-   ```
-   Settings → General → Rinkhals → Manage apps
-   ```
+- If you want Klipper directly on the printer → [**vanilla-klipper.md**](vanilla-klipper.md)  
+- If you want to offload Klipper to an external RPi4 → [**tunneled-klipper.md**](tunneled-klipper.md)  
 
-   ![settings rinkhals](images/1_settigns_rinkhals.png)  
-   ![rinkhals manage apps](images/2_rinkhals_manage_apps.png)  
-   ![vanilla klipper entry](images/3_rinkhals_manage_apps_vanilla_klipper.png)
-
-   - You should now see **`vanilla-klipper`** in the list (without a checkmark).
-
----
-
-## ⚙️ Starting Vanilla Klipper
-
-You have two options:
-
-### 1. Permanent (default at boot)
-- Either enable the checkbox next to **`vanilla-klipper`** or in the vanilla-klipper settings itself
-- Click **Enable App** → **Start App** 
-- VK will now run every time the printer boots.  
-![enabled vanilla klipper](images/7_rinkhals_manage_apps_enable_app.png)  
-
-### 2. Temporary (only for this session)
-- Click on **`vanilla-klipper`** entry.  
-- Press **Start App** (⚠️ do not press Enable App).  
-- VK runs until reboot. After power-cycle, Rinkhals with GoKlipper will start again.  
-
-Screenshots:  
-![enable start app](images/4_rinkhals_manage_apps_enable_start_app.png)  
-![running vanilla klipper](images/6_rinkhals_manage_apps__start_app_cpu.png)  
-
----
-
-## ⏳ First Startup Warning
-The **first start** of VK takes longer since it compiles a module directly on the KS1.  
-
-- Wait **at least 1 minute** after starting/enabling.  
-- VK is ready once the **Mainsail page** is fully accessible and no longer shows "starting up" messages.
-
----
-
-## 🗑️ Uninstall Vanilla Klipper
-SSH into the printer as user:root password: rockchip and run:
-```bash
-cd /useremain/home/rinkhals/apps/
-rm -rf vanilla-klipper/
-```
-
----
-
-## 🛠️ Configuration Notes
-
-During installation, two config files are added to the standard config directory:
-- `mainsail.cfg`
-- `printer.klipper.cfg`
-
-> You may delete these if not using VK.  
-> VK uses **`printer.klipper.cfg`**, which is a **stripped-down version of GoKlipper’s `printer.cfg`**.
-
----
-
-## ⚠️ Important G-code Warning
-
-Just slicing with the **KS1 profile in OrcaSlicer** and sending directly **will not work**.  
-- You must provide a **proper startup G-code sequence** in your slicer.  
-- Without it, you’ll get:
-  ```
-  Hotend too cold to extrude
-  ```
-
-Since GoKlipper is gone, so are its features (auto-leveling, wiping, reversed YX homing, startup macros).  
-👉 You must provide your own homing and startup sequences in `printer.klipper.cfg`.
-
-As startup help, I frankensteined ENDER5 and KS1 specifics together to get startup gcode. Its not optimized or perfect by anyway, but its good enough to get a benchy printed. ;)
-
-[releases/KS1/KS1_WIP_StartupGCode.txt]
-
-Copy&paste that into your slicers StartUp Gcode section.
----
-    
+For discussion, see the **#tunneled-klipper** channel on the Rinkhals Discord.
