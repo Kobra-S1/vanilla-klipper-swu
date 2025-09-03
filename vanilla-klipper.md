@@ -67,7 +67,7 @@ Screenshots: ![enable start app](images/4_rinkhals_manage_apps_enable_start_app.
 
 ## ⏳ First Startup Warning
 
-- The first launch compiles a kernel module → takes ~1 minute.  
+- The first launch compiles a helper library → takes ~1 minute.  
 - VK is ready once Mainsail is fully accessible without "starting up" messages.
 
 ---
@@ -97,7 +97,8 @@ Installed config files:
 
 ## G-code Note:
 With build >= v0.3, its possible to directly print with Orca-slicer / Anycubic next sliced gcode, no additional modifying of startup gcode in slicer necessary.
-ONLY for builds <= v0.2:
+
+⚠️ ONLY for builds <= v0.2:
 - OrcaSlicer KS1 profile alone will **not work**.  
 - You must add proper startup G-code, otherwise you’ll see:
   ```
