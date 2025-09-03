@@ -8,13 +8,9 @@ This readme explains how to install and enable the **vanilla Klipper (VK)** app 
 
 This is an **experimental vanilla-klipper test build** for KOBRA-S1, with a custom CS1237 and probing module.
 
-- Some hardware features do **not work** (filament runout, ACE Pro).  
+- Some hardware features do **not work** (ACE Pro).  
 - Some features work **only if using tunneled-klipper with RPi4** (e.g., LIS2DW12 resonance testing).  
 - Accessible only via **Mainsail web interface** (no KlipperScreen support).  
-
-👉 At first startup & first homing:  
-Check that homing and virtual endstop switches work!  
-If not → **Emergency Stop** or power off immediately.
 
 ---
 
@@ -23,7 +19,7 @@ If not → **Emergency Stop** or power off immediately.
 - Anycubic Kobra S1 (**K1S**) with **Rinkhals** already installed and running.  
 - Update file from `releases/KS1/`, e.g.  
   ```
-  ks1_vanilla_klipper_app_v0.2_update.swu
+  ks1_vanilla_klipper_app_v0.3_update.swu
   ```
 
 ---
@@ -32,7 +28,7 @@ If not → **Emergency Stop** or power off immediately.
 
 1. **Prepare update file**
    ```bash
-   ks1_vanilla_klipper_app_v0.2_update.swu → update.swu
+   ks1_vanilla_klipper_app_v0.3_update.swu → update.swu
    ```
    Copy it to:
    ```
@@ -99,21 +95,17 @@ Installed config files:
 - To allow full reconfiguration of MCU via vanilla-klipper, MCUs are reseted at every start/stop -> Causes flickering of LED light (Without that, it would be not possible to change e.g. nozzle sensitivity or stuff like that).
 ---
 
-## ⚠️ G-code Warning
-
+## G-code Note:
+With build >= v0.3, its possible to directly print with Orca-slicer / Anycubic next sliced gcode, no additional modifying of startup gcode in slicer necessary.
+ONLY for builds <= v0.2:
 - OrcaSlicer KS1 profile alone will **not work**.  
 - You must add proper startup G-code, otherwise you’ll see:
   ```
   Hotend too cold to extrude
   ```
-
-GoKlipper macros (auto-level, wipe, reversed YX homing) are not present.  
-👉 Provide your own homing + startup G-code in `printer.klipper.cfg`.
-
+So for older builds you cane use this code as a starting point, but its not required anymore from version >=v0.3 on.
 Startup help: see  → [**KS1_WIP_StartupGCode.txt**](releases/KS1/KS1_WIP_StartupGCode.txt)  
 [**KS1_WIP_EndGCode.txt**](releases/KS1/KS1_WIP_EndGCode.txt)  
-
-
 Copy & paste into your slicer’s Startup G-code section.
 
 ---
