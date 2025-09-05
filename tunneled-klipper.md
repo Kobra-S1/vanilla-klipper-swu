@@ -38,7 +38,7 @@ Otherwise, use [vanilla-klipper](vanilla-klipper.md) directly on the SoC.
 - Anycubic Kobra S1 (**K1S**) with **Rinkhals** already installed and running.  
 - Update file from `releases/KS1/`, e.g.  
   ```
-  ks1_tunneled-klipper_app_v0.1.swu
+  ks1_tunneled-klipper_app_v0.2.swu
   ```
 
 ---
@@ -47,7 +47,7 @@ Otherwise, use [vanilla-klipper](vanilla-klipper.md) directly on the SoC.
 
 1. **Prepare update file**
    ```bash
-   ks1_tunneled-klipper_app_v0.1.swu → update.swu
+   ks1_tunneled-klipper_app_v0.2.swu → update.swu
    ```
    Copy it to:
    ```
@@ -69,9 +69,10 @@ Otherwise, use [vanilla-klipper](vanilla-klipper.md) directly on the SoC.
 ## ⚙️ Starting Tunneled Klipper
 
 ### Only enable the App temporary
-- NEVER enable checkbox next to **tunneled-klipper**
-- NEVER press **Enable App**  
-- App will run othewise automatically at boot, which currently causes the system to show a error code & beeps permanent (which is very anoying)
+- Avoid for now enabling checkbox next to **tunneled-klipper**
+- Avoid also to press **Enable App**  
+- App will run automatically at boot, but changing to settings tab ends up in "Printer not ready..." and UI is blocked.
+  (You can unblock UI manually by ssh into Kobra-S1, execute "cd /useremain/home/rinkhals/apps/tunneled-klipper/" and afterwards "./app.sh stop")
 
 Screenshots: ![enable start app](images/tunnel_app_menu.png) 
 Screenshots: ![enable start app](images/tunnel.png) 
