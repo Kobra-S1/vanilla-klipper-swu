@@ -4,7 +4,7 @@ Here a klipper installation on Raspberry Pi for Vanilla Klipper Tunnel
    [Kiauh](https://github.com/dw-0/kiauh#-download-and-use-kiauh)
 
    After all Commands you can see this Window
-   [Kiauh](images/kiauh1.jpg)
+   [Kiauh1](/images/Kiauh1.jpg)
 
 3. First change the Repo for Klipper to the Kobra S1 Verion
    -Use "S" and Enter
