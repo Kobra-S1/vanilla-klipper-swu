@@ -228,7 +228,7 @@ systemctl status ports.service
 
 ![Term1](images/Term1.jpg)
 
-✅ Raspberry Pi 4 is now ready for Klipper → [Install Klipper](klipperinstall.md)
+✅ Raspberry Pi 4 is now ready for Klipper → [Install Klipper](klipper_install.md)
 
 ---
 
