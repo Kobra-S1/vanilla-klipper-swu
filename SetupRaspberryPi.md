@@ -1,101 +1,109 @@
-Tutorial for setup Rasp Pi 4+5
+# 🥧 Raspberry Pi 4 & 5 — Setup Tutorial
 
-You need:
-- Raspberry Pi 4 or 5
-- SD Card
-- Raspberry Pi Imager
-1.
-Start the Imager:
+This tutorial explains how to set up a Raspberry Pi 4 or 5 with Raspberry Pi OS Lite and prepare it as a USB Serial Bridge (e.g. for Klipper).
+
+---
+
+## 📑 Table of Contents
+
+- [📦 Requirements](#-requirements)
+- [🖼 Step 1 – Write Image](#-step-1--write-image)
+- [⚙️ Step 2 – Configure Setup](#️-step-2--configure-setup)
+- [🔐 Step 3 – Enable SSH](#-step-3--enable-ssh)
+- [⚡ Step 4 – Boot the Pi](#-step-4--boot-the-pi)
+- [⚡ Raspberry Pi 4 Setup](#-raspberry-pi-4-setup)
+  - [2.1 config.txt](#21-configtxt)
+  - [2.2 cmdline.txt](#22-cmdlinetxt)
+  - [2.3 ports.sh](#23-portssh)
+  - [2.4 ports.service](#24-portsservice)
+- [⚡ Raspberry Pi 5 Setup](#-raspberry-pi-5-setup)
+  - [2.1 config.txt](#21-configtxt-1)
+  - [2.2 /etc/modules](#22-etcmodules)
+  - [2.3 ports.sh](#23-portssh-1)
+  - [2.4 ports.service](#24-portsservice-1)
+
+---
+
+## 📦 Requirements
+
+- Raspberry Pi 4 or 5  
+- SD card  
+- Raspberry Pi Imager  
+
+---
+
+## 🖼 Step 1 – Write Image
+
+Open the **Raspberry Pi Imager**:
 
 ![Rasp_imager1](images/Rasp_imager1.jpg)  
 
-Select Pi version, os (Raspberry Pi OS Lite 64bit), Your SD card 
+Select your **Pi model**, the **operating system (Raspberry Pi OS Lite 64-bit)** and your **SD card**.
 
-2. Change Setup Settings
-   
+---
+
+## ⚙️ Step 2 – Configure Setup
+
 ![Rasp_imager2](images/Rasp_imager2.jpg)
 
-Setup with your Data Hostname,User,Wifi data
+Enter your **hostname**, **username**, **password** and **Wi-Fi credentials**:
 
 ![Rasp_imager3](images/Rasp_imager3.jpg)
 
-3. Switch to the services tab
+---
 
-   - please check SSH is active
+## 🔐 Step 3 – Enable SSH
 
-  ![Rasp_imager4](images/Rasp_imager4.jpg)
+Go to the **Services** tab and enable **SSH**:
 
-  Save and write the Image to the SD. 
-  SD is Ready for the Pi
+![Rasp_imager4](images/Rasp_imager4.jpg)
 
-  
-  4. Insert the SD card back to the Pi and power on.
-     - wait 5 min or better get a coffee
+Save the settings and write the image to the SD card.  
+Your **SD card is now ready for the Pi**.
 
+---
 
- Start a SSH tool on your PC and Login to your Pi with your Data 
-  
-==============================================================================================================
-2A >>>>>Raspberry Pi 4 <<<<
+## ⚡ Step 4 – Boot the Pi
 
-2.1Change the Config.txt: 
+1. Insert the SD card into your Pi and power it on.  
+2. Wait about **5 minutes** (or grab a coffee ☕).  
+3. Start an SSH client on your PC and **connect to your Pi**.
 
-```
+---
+
+---
+
+# ⚡ Raspberry Pi 4 Setup
+
+## 📝 2.1 config.txt
+
+```bash
 sudo su
-```
-```
-nano /boot/firmware/config.txt 
-```
-Change to this parameters or overwrite all
-```
-# For more options and information see
-# http://rptl.io/configtxt
-# Some settings may impact device functionality. See link above for details
+nano /boot/firmware/config.txt
+````
 
-# Uncomment some or all of these to enable the optional hardware interfaces
-#dtparam=i2c_arm=on
-#dtparam=i2s=on
+Replace the content with:
+
+```
+# For more options and information see http://rptl.io/configtxt
+
 dtparam=spi=on
-
-# Enable audio (loads snd_bcm2835)
 dtparam=audio=on
 
-# Additional overlays and parameters are documented
-# /boot/firmware/overlays/README
-
-# Automatically load overlays for detected cameras
 camera_auto_detect=1
-
-# Automatically load overlays for detected DSI displays
 display_auto_detect=1
-
-# Automatically load initramfs files, if found
 auto_initramfs=1
 
-# Enable DRM VC4 V3D driver
 dtoverlay=vc4-kms-v3d
 max_framebuffers=2
-
-# Don't have the firmware create an initial video= setting in cmdline.txt.
-# Use the kernel's default instead.
 disable_fw_kms_setup=1
 
-# Run in 64-bit mode
 arm_64bit=1
-
-# Disable compensation for displays with overscan
 disable_overscan=1
-
-# Run as fast as firmware / board allows
 arm_boost=1
 
 [cm4]
-# Enable host mode on the 2711 built-in XHCI USB controller.
-# This line should be removed if the legacy DWC2 controller is required
-# (e.g. for USB device mode) or if USB support is not required.
-
-# Disabled for klipper S1
-#otg_mode=1
+# otg_mode=1
 
 [cm5]
 #dtoverlay=dwc2,dr_mode=host
@@ -103,33 +111,43 @@ arm_boost=1
 [all]
 dtoverlay=dwc2
 modules-load=dwc2
-
-#hdmi_force_hotplug=0
 enable_uart=1
 ```
-Save with CTRL+O Enter and exit with CTRL+X Enter
 
-2.2 Change cmdline.txt
+> **Save:** `CTRL+O`, `Enter` — **Exit:** `CTRL+X`, `Enter`
 
-```nano /boot/firmware/cmdline.txt```
+---
 
+## 📝 2.2 cmdline.txt
 
-please add this after rootwait so that it looks like below
-
-```modules-load=dwc2,libcomposite```
-
-"rootwait modules-load=dwc2,libcomposite cfg80211.ieee80211_regdom=DE"
-
-Save CTRL+O and Exit CTRL+X
-
-2.3 Create the Ports.sh :
-
-```echo > /opt/ports.sh```
-
-```nano /opt/ports.sh```
-
-Please Copy this to the Nano Window
+```bash
+nano /boot/firmware/cmdline.txt
 ```
+
+Add this **after `rootwait`**:
+
+```
+modules-load=dwc2,libcomposite
+```
+
+Example:
+
+```
+rootwait modules-load=dwc2,libcomposite cfg80211.ieee80211_regdom=DE
+```
+
+---
+
+## ⚙️ 2.3 ports.sh
+
+```bash
+echo > /opt/ports.sh
+nano /opt/ports.sh
+```
+
+Paste this content:
+
+```bash
 #!/bin/bash
 modprobe libcomposite
 cd /sys/kernel/config/usb_gadget/
@@ -156,23 +174,28 @@ ln -s functions/acm.usb0 configs/c.1/
 # Second serial interface
 mkdir functions/acm.usb1
 ln -s functions/acm.usb1 configs/c.1/
+
 # Bind to UDC
 echo $(ls /sys/class/udc) > UDC
 ```
-Save CTRL+O Enter and  Exit CTRL+X Enter
 
-Ports.sh give user Rights
+Make it executable:
 
-```chmod +x /opt/ports.sh```
+```bash
+chmod +x /opt/ports.sh
+```
 
-2.3 Create the service in systemd:
+---
 
-```echo > /etc/systemd/system/ports.service```
+## ⚙️ 2.4 ports.service
 
- EDIT File
-```nano /etc/systemd/system/ports.service```
+```bash
+echo > /etc/systemd/system/ports.service
+nano /etc/systemd/system/ports.service
+```
 
-Copy this into the file
+Content:
+
 ```
 [Unit]
 Description=USB Serial Bridge Script
@@ -188,157 +211,108 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 ```
-Save and Exit CTRL+O,CTRL+X
 
+Enable the service:
 
-2.4
-Activate the Service:
-
-```
+```bash
 systemctl daemon-reload
 systemctl start ports.service
 systemctl enable ports.service
 ```
-you can check the service is running
-```systemctl status ports.service```
 
-You can see this then all ok (my servie is named virtual_usb its the same)
+Check the status:
+
+```bash
+systemctl status ports.service
+```
+
 ![Term1](images/Term1.jpg)
 
-Raspberry is ready for Klipper >> [Klipper install](klipperinstall.md) 
-==============================================================================================================
-2.B >>>> Raspberry 5 <<<<< 
+✅ Raspberry Pi 4 is now ready for Klipper → [Install Klipper](klipperinstall.md)
 
-2.1 Change the Config.txt: 
+---
 
-```
+---
+
+# ⚡ Raspberry Pi 5 Setup
+
+## 📝 2.1 config.txt
+
+```bash
 sudo su
+nano /boot/firmware/config.txt
 ```
-```
-nano /boot/firmware/config.txt 
-```
-Change to this parameters or overwrite all
-```
-# For more options and information see
-# http://rptl.io/configtxt
-# Some settings may impact device functionality. See link above for details
 
-# Uncomment some or all of these to enable the optional hardware interfaces
-#dtparam=i2c_arm=on
-#dtparam=i2s=on
-#dtparam=spi=on
+Content:
 
-# Enable audio (loads snd_bcm2835)
+```
 dtparam=audio=on
 
-# Additional overlays and parameters are documented
-# /boot/firmware/overlays/README
-
-# Automatically load overlays for detected cameras
 camera_auto_detect=1
-
-# Automatically load overlays for detected DSI displays
 display_auto_detect=1
-
-# Automatically load initramfs files, if found
 auto_initramfs=1
 
-# Enable DRM VC4 V3D driver
 dtoverlay=vc4-kms-v3d
 max_framebuffers=2
-
-# Don't have the firmware create an initial video= setting in cmdline.txt.
-# Use the kernel's default instead.
 disable_fw_kms_setup=1
 
-# Run in 64-bit mode
 arm_64bit=1
-
-# Disable compensation for displays with overscan
 disable_overscan=1
-
-# Run as fast as firmware / board allows
 arm_boost=1
 
 [cm4]
-# Enable host mode on the 2711 built-in XHCI USB controller.
-# This line should be removed if the legacy DWC2 controller is required
-# (e.g. for USB device mode) or if USB support is not required.
 otg_mode=1
 
 [cm5]
 dtoverlay=dwc2,dr_mode=host
 
-[all]
-
 [pi5]
 dtoverlay=dwc2
 ```
-Save with CTRL+O Enter and exit with CTRL+X Enter
 
-2.2 Create the Modules
-```echo > /etc/modules```
+---
 
-Edit the modules file:
-```nano /etc/modules```
+## 📝 2.2 /etc/modules
 
-please add this:
-```dwc2
-   libcomposite
+```bash
+echo > /etc/modules
+nano /etc/modules
 ```
-Save and Exit CTRL+O,CTRL+X
 
-2.3 Create the Ports.sh :
+Add:
 
-```echo > /opt/ports.sh```
-
-```nano /opt/ports.sh```
-
-Please Copy this to the Nano Window
 ```
-#!/bin/bash
-modprobe libcomposite
-cd /sys/kernel/config/usb_gadget/
-mkdir -p klipper
-cd klipper
-
-echo 0x1d6b > idVendor
-echo 0x0104 > idProduct
-echo 0x0100 > bcdDevice
-echo 0x0200 > bcdUSB
-
-mkdir -p strings/0x409
-echo "1234567890" > strings/0x409/serialnumber
-echo "KlipperPi" > strings/0x409/manufacturer
-echo "VirtualSerialBridge" > strings/0x409/product
-
-mkdir -p configs/c.1/strings/0x409
-echo "Config 1" > configs/c.1/strings/0x409/configuration
-
-# First serial interface
-mkdir functions/acm.usb0
-ln -s functions/acm.usb0 configs/c.1/
-
-# Second serial interface
-mkdir functions/acm.usb1
-ln -s functions/acm.usb1 configs/c.1/
-# Bind to UDC
-echo $(ls /sys/class/udc) > UDC
+dwc2
+libcomposite
 ```
-Save CTRL+O Enter and  Exit CTRL+X Enter
 
-Ports.sh give user Rights
+---
 
-```chmod +x /opt/ports.sh```
+## ⚙️ 2.3 ports.sh
 
-2.3 Create the service in systemd:
+```bash
+echo > /opt/ports.sh
+nano /opt/ports.sh
+```
 
-```echo > /etc/systemd/system/ports.service```
+Content *(same as Pi 4)*
+Then make it executable:
 
- EDIT File
-```nano /etc/systemd/system/ports.service```
+```bash
+chmod +x /opt/ports.sh
+```
 
-Copy this into the file
+---
+
+## ⚙️ 2.4 ports.service
+
+```bash
+echo > /etc/systemd/system/ports.service
+nano /etc/systemd/system/ports.service
+```
+
+Content:
+
 ```
 [Unit]
 Description=USB Serial Bridge Script
@@ -354,21 +328,23 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 ```
-Save and Exit CTRL+O,CTRL+X
 
+Enable the service:
 
-2.4
-Activate the Service:
-
-```
+```bash
 systemctl daemon-reload
 systemctl enable ports.service
 systemctl start ports.service
 ```
-you can check the service is running
-```systemctl status ports.service```
 
-You can see this then all ok (my servie is named virtual_usb its the same)
+Check the status:
+
+```bash
+systemctl status ports.service
+```
+
 ![Term1](images/Term1.jpg)
 
-Raspberry is ready for Klipper >> [Klipper install](klipperinstall.md) 
+✅ Raspberry Pi 5 is now ready for Klipper → [Install Klipper](klipperinstall.md)
+
+```
