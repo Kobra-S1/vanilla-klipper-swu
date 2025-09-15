@@ -85,32 +85,60 @@ nano /boot/firmware/config.txt
 Replace the content with:
 
 ```
-# For more options and information see http://rptl.io/configtxt
+# For more options and information see
+# http://rptl.io/configtxt
+# Some settings may impact device functionality. See link above for details
 
+# Uncomment some or all of these to enable the optional hardware interfaces
+#dtparam=i2c_arm=on
+#dtparam=i2s=on
 dtparam=spi=on
+
+# Enable audio (loads snd_bcm2835)
 dtparam=audio=on
 
+# Additional overlays and parameters are documented
+# /boot/firmware/overlays/README
+
+# Automatically load overlays for detected cameras
 camera_auto_detect=1
+
+# Automatically load overlays for detected DSI displays
 display_auto_detect=1
+
+# Automatically load initramfs files, if found
 auto_initramfs=1
 
+# Enable DRM VC4 V3D driver
 dtoverlay=vc4-kms-v3d
 max_framebuffers=2
+
+# Don't have the firmware create an initial video= setting in cmdline.txt.
+# Use the kernel's default instead.
 disable_fw_kms_setup=1
 
+# Run in 64-bit mode
 arm_64bit=1
+
+# Disable compensation for displays with overscan
 disable_overscan=1
+
+# Run as fast as firmware / board allows
 arm_boost=1
 
 [cm4]
-# otg_mode=1
+# Enable host mode on the 2711 built-in XHCI USB controller.
+# This line should be removed if the legacy DWC2 controller is required
+# (e.g. for USB device mode) or if USB support is not required.
+
+# Disabled for klipper S1
+#otg_mode=1
 
 [cm5]
 #dtoverlay=dwc2,dr_mode=host
 
 [all]
 dtoverlay=dwc2
-modules-load=dwc2
 enable_uart=1
 ```
 
@@ -118,22 +146,18 @@ enable_uart=1
 
 ---
 
-## 📝 2.2 cmdline.txt
+## 📝 2.2 /etc/modules
 
 ```bash
-nano /boot/firmware/cmdline.txt
+echo > /etc/modules
+nano /etc/modules
 ```
 
-Add this **after `rootwait`**:
+Add:
 
 ```
-modules-load=dwc2,libcomposite
-```
-
-Example:
-
-```
-rootwait modules-load=dwc2,libcomposite cfg80211.ieee80211_regdom=DE
+dwc2
+libcomposite
 ```
 
 ---
@@ -174,6 +198,10 @@ ln -s functions/acm.usb0 configs/c.1/
 # Second serial interface
 mkdir functions/acm.usb1
 ln -s functions/acm.usb1 configs/c.1/
+
+# Third serial interface for ACE Pro
+mkdir functions/acm.usb2
+ln -s functions/acm.usb2 configs/c.1/
 
 # Bind to UDC
 echo $(ls /sys/class/udc) > UDC
@@ -246,30 +274,62 @@ nano /boot/firmware/config.txt
 Content:
 
 ```
+# For more options and information see
+# http://rptl.io/configtxt
+# Some settings may impact device functionality. See link above for details
+
+# Uncomment some or all of these to enable the optional hardware interfaces
+#dtparam=i2c_arm=on
+#dtparam=i2s=on
+#dtparam=spi=on
+
+# Enable audio (loads snd_bcm2835)
 dtparam=audio=on
 
+# Additional overlays and parameters are documented
+# /boot/firmware/overlays/README
+
+# Automatically load overlays for detected cameras
 camera_auto_detect=1
+
+# Automatically load overlays for detected DSI displays
 display_auto_detect=1
+
+# Automatically load initramfs files, if found
 auto_initramfs=1
 
+# Enable DRM VC4 V3D driver
 dtoverlay=vc4-kms-v3d
 max_framebuffers=2
+
+# Don't have the firmware create an initial video= setting in cmdline.txt.
+# Use the kernel's default instead.
 disable_fw_kms_setup=1
 
+# Run in 64-bit mode
 arm_64bit=1
+
+# Disable compensation for displays with overscan
 disable_overscan=1
+
+# Run as fast as firmware / board allows
 arm_boost=1
 
 [cm4]
+# Enable host mode on the 2711 built-in XHCI USB controller.
+# This line should be removed if the legacy DWC2 controller is required
+# (e.g. for USB device mode) or if USB support is not required.
 otg_mode=1
 
 [cm5]
 dtoverlay=dwc2,dr_mode=host
 
+[all]
+
 [pi5]
 dtoverlay=dwc2
 ```
-
+Save and Exit CTRL+O,CTRL+X
 ---
 
 ## 📝 2.2 /etc/modules
