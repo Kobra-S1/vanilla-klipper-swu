@@ -19,7 +19,12 @@ This lets you run Klipper on the RPi4 while the Kobra S1 SoC acts as a serial br
 - Additional USB serial-gadget setup & vanilla-Klipper installation on the RPi4 (not covered here)
 
 For details, see the **#tunneled-klipper** channel on the Rinkhals Discord.
+Here you can find 2 instructions:
 
+ -[Raspberry Setup for Tunnel](SetupRaspberryPi.md)
+ 
+ -[Klipper install on Pi for Kobra S1](klipper_install.md)
+ 
 ---
 
 ## 🔄 Use Case
