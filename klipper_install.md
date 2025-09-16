@@ -50,4 +50,8 @@ Now install the software you need:
 
 Once installed, you can configure everything through your **web interface** (Fluidd or Mainsail).
 
+A KS1 printer.cfg for klipper to start with can be found here: **[printer.tunneled-klipper.cfg](releases/KS1/printer.tunneled-klipper.cfg)**
+
+Replace the default printer.cfg (e.g. via mainsail configuration editor) with the content of that file.  
+
 ✅ That’s it — if everything went well, your Klipper setup is ready to use.
