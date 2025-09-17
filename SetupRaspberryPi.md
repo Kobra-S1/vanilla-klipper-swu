@@ -246,6 +246,7 @@ Enable the service:
 systemctl daemon-reload
 systemctl start ports.service
 systemctl enable ports.service
+sudo reboot
 ```
 
 Check the status:
@@ -395,6 +396,7 @@ Enable the service:
 systemctl daemon-reload
 systemctl enable ports.service
 systemctl start ports.service
+sudo reboot
 ```
 
 Check the status:
