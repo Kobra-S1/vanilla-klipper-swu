@@ -126,6 +126,8 @@ In Mainsail, click the gear icon (top-right) → scroll to **Webcams** → **ADD
 - The RPi can already be connected when you start the app, but you can also start it first and connect later.  
   Disconnecting/reconnecting USB while the tunneled app is running is supported. If a `socat` connection breaks due to USB interruption, the MCUs are reset; use **FIRMWARE RESTART** in Mainsail to re-establish the connection.
 
+- Sometimes MCU connection after first boot can be not properly established and even FIRMWARE RESTART alone does not fix it. In this case a hard MCU reset is necessary. Quickest way to do that is to remove the USB plug from the printer, wait until you hear after 1-2 seconds two USB disconnect beeper-jingles, then replug, wait for two another confimration kingles and then try FIRMWARE RESTART again.
+
 ---
 
 ## 🔊 Sound Indications
