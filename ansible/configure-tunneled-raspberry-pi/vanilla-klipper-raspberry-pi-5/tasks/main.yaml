@@ -1,0 +1,25 @@
+- name: Schreibe config.txt
+  copy:
+    src: config.txt
+    dest: /boot/firmware/config.txt
+  notify: reboot_pi
+- name: Schreibe /etc/modules
+  template:
+    src: modules.j2
+    dest: /etc/modules
+- name: Erstelle ports.sh Skript
+  copy:
+    src: ports.sh
+    dest: /opt/ports.sh
+    mode: '0755'
+- name: ports.service Systemd Unit anlegen
+  copy:
+    src: ports.service
+    dest: /etc/systemd/system/ports.service
+- name: Systemd Daemon neu laden
+  command: systemctl daemon-reload
+- name: ports.service starten
+  systemd:
+    name: ports.service
+    state: started
+    enabled: yes

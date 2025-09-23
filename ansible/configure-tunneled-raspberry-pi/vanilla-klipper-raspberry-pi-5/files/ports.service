@@ -1,0 +1,13 @@
+[Unit]
+Description=USB Serial Bridge Script
+After=network.target syslog.target
+
+[Service]
+Type=simple
+ExecStart=/opt/ports.sh
+User=root
+WorkingDirectory=/opt
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

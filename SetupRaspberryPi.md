@@ -71,6 +71,12 @@ Your **SD card is now ready for the Pi**.
 
 ---
 
+## Ansible Playbook
+
+Alternatively, you can automate the Raspberry Pi setup using the provided Ansible playbook located in [`ansible/configure-tunneled-raspberry-pi`](ansible/configure-tunneled-raspberry-pi). This playbook will automatically configure your Raspberry Pi 4 or 5 with all the necessary settings for Klipper.
+
+See the [Ansible playbook README](ansible/configure-tunneled-raspberry-pi/README.md) for detailed instructions on how to use it.
+
 ---
 
 # ⚡ Raspberry Pi 4 Setup
