@@ -1,0 +1,5 @@
+- hosts: raspberrypi
+  become: true
+  roles:
+    - vanilla-klipper-raspberry-pi-4
+    # - vanilla-klipper-raspberry-pi-5
