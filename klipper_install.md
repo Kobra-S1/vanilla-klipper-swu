@@ -44,14 +44,43 @@ After running the installation commands, you will see the main KIAUH menu:
 
 Now install the software you need:
 
-- Klipper  
-- Moonraker  
-- Fluidd and/or Mainsail  
+- **Klipper**  
+- **Moonraker**  
+- **Fluidd** and/or **Mainsail**
 
-Once installed, you can configure everything through your **web interface** (Fluidd or Mainsail).
+---
 
-A KS1 printer.cfg for klipper to start with can be found here: **[printer.tunneled-klipper.cfg](releases/KS1/printer.tunneled-klipper.cfg)**
+### 🖥️ Klipper Installation
 
-Replace the default printer.cfg (e.g. via mainsail configuration editor) with the content of that file.  
+Follow the prompts in the installer:
 
-✅ That’s it — if everything went well, your Klipper setup is ready to use.
+- **Number of Instances:** `1` (or as you like)  
+- **Create example config?:** `Y`  
+- **Overwrite existing config?:** `N`  
+- **Re-create VirtualEnv?:** `N`  
+- **Add user to group?:** `Y`  
+- **Finish installation** 
+
+---
+
+### 🌙 Moonraker Installation
+
+- **Create example config?:** `Y` 
+
+---
+
+### 💧 Fluidd / Mainsail Installation
+
+- **Create example config?:** `Y` 
+
+---
+
+### 🌐 Accessing the Web Interface
+
+Once installation is complete, you can configure everything via your **web interface**:
+
+- **Fluidd/Mainsail:** `http://<RPI-IP>:80`  
+
+
+> 💡 **Tip:** You can switch between Fluidd and Mainsail based on your preference. Both provide a full web-based control interface for Klipper.
+
