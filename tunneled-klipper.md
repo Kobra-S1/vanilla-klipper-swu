@@ -97,7 +97,7 @@ _Screenshots:_
 
 ### RPi4 setup
 
-- Install Klipper on the RPi4 as usual.  
+- Install Klipper on the RPi4 as usual, by using this forked Klipperbranch: https://github.com/Kobra-S1/klipper-kobra-s1/tree/Kobra-S1-Dev
 - Create your Klipper `printer.cfg` on the RPi4:
   - Start from your existing config; comment out unsupported keys.  
   - Change `/dev/ttyS3` and `/dev/ttyS5` to the serial-gadget devices (likely `/dev/ttyGS0` and `/dev/ttyGS1`).  
@@ -116,6 +116,13 @@ In Mainsail, click the gear icon (top-right) → scroll to **Webcams** → **ADD
 ---
 
 ## ⚠️ Functional Notes
+- To avoid spurious issues with klippy connecting to the S1 MCUs after reboot, add this two lines into your /etc/systemd/system/klipper.service file (above ExecStart=/home/pi/klippy-env/bin/python $KLIPPER_ARGS):
+ ExecStartPre=/bin/stty -F /dev/ttyGS0 sane
+ ExecStartPre=/bin/stty -F /dev/ttyGS1 sane
+
+After wards execute:
+ sudo systemctl daemon-reload
+ sudo systemctl restart klipper
 
 - To allow full MCU reconfiguration via the tunneled vanilla-Klipper, MCUs are reset at every start/stop. This causes the LED light to flicker. (Without this, changes—e.g., nozzle sensitivity—wouldn’t be possible.)
 
