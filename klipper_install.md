@@ -121,15 +121,72 @@ If you are using a **KS1 setup**, you can optionally install the **Tunnel Contro
 
 6. **Finish installation** ✅  
    Once complete, you can find:
-   - 💡 **LED Macros** under the **Macros** section in Fluidd/Mainsail  
    - 🚇 **Tunnel Control Panel** at the **top right**, under the **Power** menu
+
+# 💡 LED Control Macros
+
+You can put the following macros in your **Printer.cfg** or in a separate include file like **Macro.cfg**.
+These macros allow you to **turn the printer light ON/OFF** or **toggle it** using the Tunnel Control Script.
 
 ---
 
-### ⚙️ Features
+## ⚙️ Pre-requisite: Install `sshpass`
 
-- 💡 **LED Control** – toggle or dim tunnel lighting  
-- 🔄 **Automatic Startup** – starts the control service on boot  
-- 🧠 **Integration with KS1** – direct control through your web UI  
+Before using the macros, ensure `sshpass` is installed on your Raspberry Pi:
+
+```bash
+sudo apt update
+sudo apt install -y sshpass
+```
+
+> 💡 `sshpass` allows automated SSH commands with password authentication.
+
+---
+
+## 🔧 Macros
+
+```
+# ----------------------------------------
+# Light Control Macros
+# ----------------------------------------
+
+[gcode_shell_command gpio_set]
+command: sshpass -p 'rockchip' ssh -o StrictHostKeyChecking=no root@IPADDRESS_PRINTER "echo 1 > /sys/class/gpio/gpio117/value"
+timeout: 10.0
+verbose: True
+
+[gcode_shell_command gpio_clear]
+command: sshpass -p 'rockchip' ssh -o StrictHostKeyChecking=no root@IPADDRESS_PRINTER "echo 0 > /sys/class/gpio/gpio117/value"
+timeout: 10.0
+verbose: True
+
+[gcode_macro LIGHT_ON]
+description: Turn printer light ON
+gcode:
+    RUN_SHELL_COMMAND CMD=gpio_set
+    RESPOND MSG="💡 Light turned ON"
+
+[gcode_macro LIGHT_OFF]
+description: Turn printer light OFF
+gcode:
+    RUN_SHELL_COMMAND CMD=gpio_clear
+    RESPOND MSG="💡 Light turned OFF"
+
+[gcode_macro LIGHT_TOGGLE]
+description: Toggle printer light ON/OFF
+variable_light_state: 0
+gcode:
+    {% if printer["gcode_macro LIGHT_TOGGLE"].light_state == 0 %}
+        RUN_SHELL_COMMAND CMD=gpio_set
+        SET_GCODE_VARIABLE MACRO=LIGHT_TOGGLE VARIABLE=light_state VALUE=1
+        RESPOND MSG="💡 Light turned ON"
+    {% else %}
+        RUN_SHELL_COMMAND CMD=gpio_clear
+        SET_GCODE_VARIABLE MACRO=LIGHT_TOGGLE VARIABLE=light_state VALUE=0
+        RESPOND MSG="💡 Light turned OFF"
+    {% endif %}
+```
+
+> ⚠️ **Tip:** Replace `IPADDRESS_PRINTER` with your printer's actual IP address. Make sure SSH access to the printer works.
 
 ---
