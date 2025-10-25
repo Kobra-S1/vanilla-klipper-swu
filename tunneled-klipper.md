@@ -110,8 +110,8 @@ _Screenshots:_
 
 In Mainsail, click the gear icon (top-right) → scroll to **Webcams** → **ADD WEBCAM**. Add two streams, replacing `YourPrinterName` with the hostname or IP of your KS1:
 
-- Stream URL: `http://YourPrinterName/webcam/?action=stream`  
-- Snapshot URL: `http://YourPrinterName/webcam/?action=snapshot`
+- Stream URL: `http://<YourPrinterName>:8080/webcam/?action=stream`  
+- Snapshot URL: `http://<YourPrinterName>:8080/webcam/?action=snapshot`
 
 ---
 
