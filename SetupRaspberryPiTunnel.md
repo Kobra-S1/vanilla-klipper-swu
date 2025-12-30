@@ -92,7 +92,7 @@ sudo ./setup_tunnel_klipper.sh
 
 ## 7️⃣ Install KIAUH
 
-After the installation, **KIAUH** will automatically start.
+After the installation and execution of setup_tunnel_klipper.sh, **KIAUH** will automatically start.
 
 Choose one of the following options:
 
