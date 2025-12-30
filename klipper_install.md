@@ -13,6 +13,8 @@ After running the installation commands, you will see the main KIAUH menu:
 
 ## 🔄 Step 2 – Switch Klipper Repository to Kobra S1 Version
 
+Update: If you installed kiauh via "setup_tunnel_klipper.sh" script, this step 2 is done automated by setup script, so the right repo is already select by default. In case you install manually, execute the below mentioned steps, otherwise its fine to skip step 2 and continue with step 3.
+
 1. Press **`S`** → Enter  
 2. Press **`1`** → Enter (Switch Klipper source)  
 3. Press **`A`** → Enter (Add repository)  
@@ -80,26 +82,26 @@ Once installation is complete, you can configure everything via your **web inter
 > 💡 **Tip:** You can switch between Fluidd and Mainsail based on your preference. Both provide a full web-based control interface for Klipper.
 ## 🌈 Optional – Install the Tunnel Control Script (from the User "NUKY" thank you for your work)
 
-**Download** [tunnel_controll](tunnel_controll.sh)
+**Download** [tunnel_control](tunnel_control.sh)
 
 If you are using a **KS1 setup**, you can optionally install the **Tunnel Control Script** to manage the **LED** and **Tunnel App** directly from your Raspberry Pi.
 
 ### 🔧 Installation
 1. **Save the script**  
-   Copy the file **`tunnel_controll.sh`** to your Raspberry Pi (e.g., into your home directory).
+   Copy the file **`tunnel_control.sh`** to your Raspberry Pi (e.g., into your home directory).
 
 2. **Grant execution privileges**  
    Run the following commands via SSH:
 
    ```bash
    sudo su
-   chmod +x tunnel_controll.sh
+   chmod +x tunnel_control.sh
    ```
 
 3. **Start the script**
 
    ```bash
-   ./tunnel_controll.sh
+   ./tunnel_control.sh
    ```
 
 4. **Select installation**  

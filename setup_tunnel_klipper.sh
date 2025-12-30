@@ -1,38 +1,38 @@
 #!/bin/bash
 set -e
 
-# Sicherstellen, dass das Skript als root läuft
+# Ensure the script runs as root
 if [[ $EUID -ne 0 ]]; then
-    echo "Bitte mit sudo oder als root ausführen"
+    echo "Please run with sudo or as root"
     exit 1
 fi
 
 NORMAL_USER=${SUDO_USER:-$USER}
 CONFIG_FILE="/boot/firmware/config.txt"
 
-# --- Modell abfragen ---
-echo "Welches Raspberry Pi Modell verwendest du?"
+# --- Query model ---
+echo "Which Raspberry Pi model are you using?"
 echo "1) Pi 4"
 echo "2) Pi 5"
-read -rp "Bitte Zahl eingeben (1 oder 2): " MODEL_CHOICE
+read -rp "Please enter number (1 or 2): " MODEL_CHOICE
 
 if [[ "$MODEL_CHOICE" == "1" ]]; then
     BLOCK_NAME="pi4"
 elif [[ "$MODEL_CHOICE" == "2" ]]; then
     BLOCK_NAME="pi5"
 else
-    echo "Ungültige Auswahl. Bitte 1 oder 2 eingeben."
+    echo "Invalid selection. Please enter 1 or 2."
     exit 1
 fi
 
-echo "=== Konfiguriere config.txt für $BLOCK_NAME ==="
+echo "=== Configuring config.txt for $BLOCK_NAME ==="
 if grep -q "^\[$BLOCK_NAME\]" "$CONFIG_FILE"; then
-    # Block existiert → dtoverlay=dwc2 prüfen
+    # Block exists → check dtoverlay=dwc2
     if ! awk -v blk="$BLOCK_NAME" '/^\[/{f=($0=="["blk"]")?1:0} f && /^dtoverlay=dwc2/' "$CONFIG_FILE" >/dev/null; then
         sed -i "/^\[$BLOCK_NAME\]/a dtoverlay=dwc2" "$CONFIG_FILE"
     fi
 else
-    # Block nicht vorhanden → hinzufügen
+    # Block not present → add it
     {
         echo ""
         echo "[$BLOCK_NAME]"
@@ -40,13 +40,13 @@ else
     } >> "$CONFIG_FILE"
 fi
 
-# --- /etc/modules prüfen ---
-echo "=== Füge dwc2 und libcomposite zu /etc/modules hinzu ==="
+# --- Check /etc/modules ---
+echo "=== Adding dwc2 and libcomposite to /etc/modules ==="
 grep -qxF "dwc2" /etc/modules || echo "dwc2" >> /etc/modules
 grep -qxF "libcomposite" /etc/modules || echo "libcomposite" >> /etc/modules
 
-# --- /opt/ports.sh erstellen ---
-echo "=== Erstelle /opt/ports.sh ==="
+# --- Create /opt/ports.sh ---
+echo "=== Creating /opt/ports.sh ==="
 cat >/opt/ports.sh <<'EOF'
 #!/bin/bash
 set -e
@@ -70,21 +70,21 @@ echo VirtualSerialBridge > strings/0x409/product
 mkdir -p configs/c.1/strings/0x409
 echo "Config 1" > configs/c.1/strings/0x409/configuration
 
-# Funktionen anlegen (nur wenn nicht vorhanden)
+# Create functions (only if not present)
 for i in 0 1 2; do
     mkdir -p functions/acm.usb$i
     [ -e configs/c.1/acm.usb$i ] || ln -s functions/acm.usb$i configs/c.1/
 done
 
-# USB aktivieren
+# Enable USB
 UDC_NAME=$(ls /sys/class/udc)
 echo "$UDC_NAME" > UDC
 EOF
 
 chmod +x /opt/ports.sh
 
-# --- ports.service erstellen ---
-echo "=== Erstelle /etc/systemd/system/ports.service ==="
+# --- Create ports.service ---
+echo "=== Creating /etc/systemd/system/ports.service ==="
 cat >/etc/systemd/system/ports.service <<'EOF'
 [Unit]
 Description=USB Serial Bridge Script
@@ -101,13 +101,13 @@ Restart=on-failure
 WantedBy=multi-user.target
 EOF
 
-echo "=== Aktiviere und starte ports.service ==="
+echo "=== Enabling and starting ports.service ==="
 systemctl daemon-reload
 systemctl enable ports.service
 systemctl restart ports.service
 
-# --- KIAUH installieren ---
-echo "=== Installiere KIAUH (als Benutzer $NORMAL_USER) ==="
+# --- Install KIAUH ---
+echo "=== Installing KIAUH (as user $NORMAL_USER) ==="
 apt-get update
 apt-get install -y git
 
@@ -118,7 +118,28 @@ if [ ! -d ~/kiauh ]; then
 fi
 EOF
 
-echo "=== Setup abgeschlossen ==="
-echo "Starte jetzt KIAUH als Benutzer $NORMAL_USER ..."
+# --- Patch KIAUH config to use Kobra-S1 Klipper fork ---
+echo "=== Patching KIAUH config for Kobra-S1 Klipper fork ==="
+KIAUH_CONFIG="/home/$NORMAL_USER/kiauh/default.kiauh.cfg"
+if [ -f "$KIAUH_CONFIG" ]; then
+    sed -i '/\[klipper\]/,/^\[/ {
+        s|https://github.com/Klipper3d/klipper|https://github.com/Kobra-S1/klipper-kobra-s1, Kobra-S1-Dev|
+    }' "$KIAUH_CONFIG"
+    echo "KIAUH config patched successfully"
+else
+    echo "Warning: KIAUH config file not found at $KIAUH_CONFIG"
+fi
+
+
+echo "################################################################################################################"
+echo "After KIAUH has installed Klipper, run this once manually to optimize serial connections at klipper start:"
+echo ""
+echo "sudo sed -i '/^ExecStart=/i ExecStartPre=/bin/stty -F /dev/ttyGS1 sane' /etc/systemd/system/klipper.service"
+echo "sudo sed -i '/^ExecStart=/i ExecStartPre=/bin/stty -F /dev/ttyGS0 sane' /etc/systemd/system/klipper.service"
+echo "sudo systemctl daemon-reload"
+echo "sudo systemctl restart klipper.service"
+echo "################################################################################################################"
+
+echo "Starting KIAUH now as user $NORMAL_USER ..."
 sleep 2
 sudo -u "$NORMAL_USER" bash -c 'cd ~/kiauh && ./kiauh.sh'

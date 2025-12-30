@@ -17,6 +17,7 @@ This tutorial explains how to set up a Raspberry Pi 4 or 5 with Raspberry Pi OS 
 * [5️⃣ Make the Script Executable](#5️⃣-make-the-script-executable)
 * [6️⃣ Start the Installation](#6️⃣-start-the-installation)
 * [7️⃣ Install KIAUH](#7️⃣-install-kiauh)
+* [8️⃣ Modify Klipper Start Script](#8️⃣-modify-klipper-start-script)
 * [✅ Done](#✅-done)
 
 ---
@@ -55,8 +56,7 @@ Go to the **Services** tab and enable **SSH**:
 
 ![Rasp\_imager4](images/Rasp_imager4.jpg)
 
-Save the settings and write the image to the SD card.
-Your **SD card is now ready for the Pi**.
+Save the settings and write the image to the SD card. Your **SD card is now ready for the Pi**.
 
 ---
 
@@ -68,30 +68,7 @@ Your **SD card is now ready for the Pi**.
 
 ---
 
-## 2️⃣ Copy the Installation Script to Your Pi
-
-Download the file **[`setup_tunnel_klipper.sh`](setup_tunnel_klipper.sh)** and copy it to your Raspberry Pi using **SCP**:
-
-```bash
-scp setup_tunnel_klipper.sh pi@<RPI-IP-ADDRESS>:~/
-```
-
-#### Example:
-
-```bash
-scp setup_tunnel_klipper.sh pi@192.168.1.42:~/
-```
-
-> 💡 **Tips:**
->
-> * Replace `<RPI-IP-ADDRESS>` with your Raspberry Pi’s actual IP address.
-> * The default username is usually **pi**.
-> * You’ll be prompted for your Pi’s password.
-> * Using `:~/` automatically places the file in your user’s home directory.
-
----
-
-## 3️⃣ Start Your SSH Connection
+## 5️⃣ Start Your SSH Connection
 
 Use an SSH client (e.g. **PuTTY**, **MobaXterm**, or **Terminal**) to connect to your Raspberry Pi:
 
@@ -101,35 +78,15 @@ ssh pi@<RPI-IP-ADDRESS>
 
 ---
 
-## 4️⃣ Switch to Superuser Mode
+## 6️⃣ Download and Run the Installation Script
 
-Run the following command to get administrative privileges:
-
-```bash
-sudo su
-```
-
----
-
-## 5️⃣ Make the Script Executable
-
-Grant execution permission to the script:
+Download and execute the **[`setup_tunnel_klipper.sh`](setup_tunnel_klipper.sh)** script directly on your Raspberry Pi:
 
 ```bash
+wget https://raw.githubusercontent.com/Kobra-S1/vanilla-klipper-swu/main/setup_tunnel_klipper.sh
 chmod +x setup_tunnel_klipper.sh
+sudo ./setup_tunnel_klipper.sh
 ```
-
----
-
-## 6️⃣ Start the Installation
-
-Run the setup script and follow the on-screen instructions:
-
-```bash
-./setup_tunnel_klipper.sh
-```
-
-> 🧩 When prompted, **select your Raspberry Pi version (4 or 5)** and press **Enter**.
 
 ---
 
@@ -139,12 +96,30 @@ After the installation, **KIAUH** will automatically start.
 
 Choose one of the following options:
 
-* **Option 1** – to use KIAUH V6
-* **Option 3** – to use and save permanently KIAUH V6
+* **Option 1** – to use KIAUH V6.
+* **Option 3** – to use and save permanently KIAUH V6.
 
 > ⚙️ Follow the instructions [Install Klipper](klipper_install.md)
 
 ---
+
+
+## 8️⃣ Modify Klipper Start Script
+
+To avoid spurious issues with klippy connecting to the S1 MCUs after reboot, add these two lines into your /etc/systemd/system/klipper.service file (above ExecStart=/home/pi/klippy-env/bin/python $KLIPPER_ARGS):
+```
+ ExecStartPre=/bin/stty -F /dev/ttyGS0 sane
+ ExecStartPre=/bin/stty -F /dev/ttyGS1 sane
+```
+Afterwards execute:
+```
+ sudo systemctl daemon-reload
+ sudo systemctl restart klipper
+```
+
+---
+
+
 
 ## ✅ Done!
 
