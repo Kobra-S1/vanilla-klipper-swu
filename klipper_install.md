@@ -86,7 +86,7 @@ Once installation is complete, you can configure everything via your **web inter
 
 To download execute in your RPi shell:
 ```
-wget https://github.com/Kobra-S1/vanilla-klipper-swu/blob/main/tunnel_control.sh
+wget https://raw.githubusercontent.com/Kobra-S1/vanilla-klipper-swu/main/tunnel_control.sh
 ```
 If you are using a **KS1 setup**, you can optionally install the **Tunnel Control Script** to manage the **LED** and **Tunnel App** directly from your Raspberry Pi.
 
