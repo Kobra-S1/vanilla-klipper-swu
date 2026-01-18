@@ -3,7 +3,7 @@ set -e
 
 SERVICE_NAME="flask-tunnel"
 
-# --- Benutzer und Pfade ermitteln ---
+# --- Determine user and paths ---
 if [ -n "$SUDO_USER" ] && [ "$SUDO_USER" != "root" ]; then
     USERNAME="$SUDO_USER"
 else
@@ -20,20 +20,20 @@ MOON_CFG="$HOME_DIR/printer_data/config/moonraker.conf"
 [ "$(id -u)" -ne 0 ] && SUDO="sudo" || SUDO=""
 
 install_tunnel() {
-    read -p "IP Adress from Printer: " IPADDR
-    [ -z "$IPADDR" ] && { echo "âŒ Keine IP eingegeben â€“ Abbruch."; exit 1; }
+    read -p "IP Address from Printer: " IPADDR
+    [ -z "$IPADDR" ] && { echo "âŒ No IP address entered â€“ Aborting."; exit 1; }
 
     read -p "Port for Flask [Default 5001]: " FLASK_PORT
     [ -z "$FLASK_PORT" ] && FLASK_PORT=5001
 
-    echo "-> Installiere benÃ¶tigte Pakete..."
+    echo "-> Installing required packages..."
     $SUDO apt update
     $SUDO apt install -y python3-flask sshpass
 
-    echo "-> Erstelle Arbeitsverzeichnis: $FLASK_DIR"
+    echo "-> Creating working directory: $FLASK_DIR"
     mkdir -p "$FLASK_DIR"
 
-    # Python-Script erzeugen
+    # Generate Python script
     cat > "$FLASK_SCRIPT" <<EOF
 from flask import Flask, jsonify
 import subprocess
@@ -74,7 +74,7 @@ EOF
     chmod +x "$FLASK_SCRIPT"
     $SUDO chown -R "$USERNAME:$USERNAME" "$FLASK_DIR"
 
-    echo "-> ErgÃ¤nze moonraker.conf ($MOON_CFG)"
+    echo "-> Updating moonraker.conf ($MOON_CFG)"
     if ! grep -q "KlipperTunnel" "$MOON_CFG" 2>/dev/null; then
         $SUDO mkdir -p "$(dirname "$MOON_CFG")"
         $SUDO bash -c "cat >> '$MOON_CFG' <<'MOONEOF'
@@ -91,10 +91,10 @@ response_template:
 MOONEOF"
         $SUDO chown "$USERNAME:$USERNAME" "$MOON_CFG"
     else
-        echo "  -> Block 'KlipperTunnel' existiert schon â€“ Ã¼bersprungen."
+        echo "  -> Block 'KlipperTunnel' already exists â€“ skipped."
     fi
 
-    echo "-> Systemd-Service anlegen ($SYSTEMD_FILE)"
+    echo "-> Creating systemd service ($SYSTEMD_FILE)"
     $SUDO bash -c "cat > '$SYSTEMD_FILE' <<EOL
 [Unit]
 Description=Flask Tunnel Control
@@ -111,50 +111,50 @@ Restart=always
 WantedBy=multi-user.target
 EOL"
 
-    echo "-> Service aktivieren..."
+    echo "-> Enabling service..."
     $SUDO systemctl daemon-reload
     $SUDO systemctl enable "$SERVICE_NAME"
     $SUDO systemctl restart "$SERVICE_NAME" || \
-      echo "âŒ Fehler beim Starten â€“ Logs mit: sudo journalctl -u $SERVICE_NAME -b"
+      echo "âŒ Error starting service â€“ Check logs with: sudo journalctl -u $SERVICE_NAME -b"
 
-    echo "-> Moonraker neustarten..."
-    $SUDO systemctl restart moonraker || echo "âš ï¸ Moonraker-Service nicht gefunden."
+    echo "-> Restarting Moonraker..."
+    $SUDO systemctl restart moonraker || echo "âš ï¸ Moonraker service not found."
 
     echo ""
-    echo "âœ… Installation abgeschlossen!"
-    echo "  Flask-Port: $FLASK_PORT"
-    echo "  Ziel-IP:    $IPADDR"
-    echo "  Service:    $SERVICE_NAME (lÃ¤uft als $USERNAME)"
+    echo "âœ… Installation completed!"
+    echo "  Flask Port: $FLASK_PORT"
+    echo "  Target IP:  $IPADDR"
+    echo "  Service:    $SERVICE_NAME (running as $USERNAME)"
 }
 
 uninstall_tunnel() {
-    echo "í ½í»  Entferne Service..."
+    echo "-> Removing service..."
     $SUDO systemctl stop "$SERVICE_NAME" 2>/dev/null || true
     $SUDO systemctl disable "$SERVICE_NAME" 2>/dev/null || true
     $SUDO rm -f "$SYSTEMD_FILE"
 
-    echo "í ½í·‘ Entferne Flask-Verzeichnis: $FLASK_DIR"
+    echo "-> Removing Flask directory: $FLASK_DIR"
     $SUDO rm -rf "$FLASK_DIR"
 
-    echo "âš ï¸ Der Block [power KlipperTunnel] in $MOON_CFG bleibt bestehen."
-    echo "   Entferne ihn manuell, falls nicht mehr benÃ¶tigt."
+    echo "âš ï¸ The [power KlipperTunnel] block in $MOON_CFG will remain."
+    echo "   Remove it manually if no longer needed."
 
     $SUDO systemctl daemon-reload
     $SUDO systemctl restart moonraker 2>/dev/null || true
 
-    echo "í ½í·‘ Deinstallation abgeschlossen."
+    echo "âœ… Uninstallation completed."
 }
 
 echo "-----------------------------------"
 echo " Flask Tunnel Setup Script"
 echo "-----------------------------------"
 echo "1) Install"
-echo "2) Deinstall"
+echo "2) Uninstall"
 echo "-----------------------------------"
-read -p "Bitte Auswahl eingeben [1/2]: " CHOICE
+read -p "Please enter your choice [1/2]: " CHOICE
 
 case "$CHOICE" in
     1) install_tunnel ;;
     2) uninstall_tunnel ;;
-    *) echo "UngÃ¼ltige Auswahl!"; exit 1 ;;
+    *) echo "Invalid choice!"; exit 1 ;;
 esac
