@@ -14,6 +14,12 @@ VNC_DEPTH=16
 VNC_QUALITY=6
 VNC_COMPRESS=6
 
+USER="${SUDO_USER:-${USER:-$(id -un)}}"
+USER_HOME="$(getent passwd "$USER" 2>/dev/null | cut -d: -f6 || true)"
+if [ -z "$USER_HOME" ]; then
+    USER_HOME="${HOME:-/home/$USER}"
+fi
+
 usage() {
     cat <<'EOF'
 Usage: sudo bash rpi-setup.sh [options]
@@ -35,6 +41,19 @@ Examples:
   sudo bash rpi-setup.sh --profile k3
   sudo bash rpi-setup.sh --width 480 --height 272 --rotation 270 --depth 16 --quality 5 --compress 7
 EOF
+}
+
+prompt_input() {
+    local prompt="$1"
+    local default="$2"
+    local response
+
+    if [ -t 0 ]; then
+        read -r -p "$prompt [$default]: " response
+        echo "${response:-$default}"
+    else
+        echo "$default"
+    fi
 }
 
 apply_profile() {
@@ -140,38 +159,78 @@ case "$VNC_COMPRESS" in
         ;;
 esac
 
+DEFAULT_KLIPPERSCREEN_ROOT="$USER_HOME/KlipperScreen"
+if [ ! -d "$DEFAULT_KLIPPERSCREEN_ROOT" ]; then
+    for candidate in "$USER_HOME/KlipperScreen" "$USER_HOME/klipperscreen"; do
+        if [ -d "$candidate" ]; then
+            DEFAULT_KLIPPERSCREEN_ROOT="$candidate"
+            break
+        fi
+    done
+fi
+
+KLIPPERSCREEN_ROOT="${KLIPPERSCREEN_ROOT:-$(prompt_input "KlipperScreen directory (press ENTER to use default)" "$DEFAULT_KLIPPERSCREEN_ROOT")}"
+if [ ! -d "$KLIPPERSCREEN_ROOT" ]; then
+    echo "ERROR: KlipperScreen directory not found: $KLIPPERSCREEN_ROOT" >&2
+    exit 1
+fi
+
 # --- Detect KlipperScreen venv ---
-KLIPPERSCREEN_VENV=""
-for candidate in /home/pi/.KlipperScreen-env /home/pi/KlipperScreen-env; do
-    if [ -x "$candidate/bin/python3" ]; then
-        KLIPPERSCREEN_VENV="$candidate"
-        break
+KLIPPERSCREEN_VENV="${KLIPPERSCREEN_VENV:-}"
+if [ -n "$KLIPPERSCREEN_VENV" ]; then
+    if [ ! -x "$KLIPPERSCREEN_VENV/bin/python3" ]; then
+        echo "ERROR: KLIPPERSCREEN_VENV is invalid: $KLIPPERSCREEN_VENV" >&2
+        exit 1
     fi
-done
+else
+    for candidate in \
+        "$USER_HOME/.KlipperScreen-env" \
+        "$USER_HOME/KlipperScreen-env" \
+        "$(dirname "$KLIPPERSCREEN_ROOT")/.KlipperScreen-env" \
+        "$(dirname "$KLIPPERSCREEN_ROOT")/KlipperScreen-env"
+    do
+        if [ -x "$candidate/bin/python3" ]; then
+            KLIPPERSCREEN_VENV="$candidate"
+            break
+        fi
+    done
+fi
 if [ -z "$KLIPPERSCREEN_VENV" ]; then
     echo "ERROR: Could not find KlipperScreen venv. Searched:"
-    echo "  /home/pi/.KlipperScreen-env"
-    echo "  /home/pi/KlipperScreen-env"
+    echo "  $USER_HOME/.KlipperScreen-env"
+    echo "  $USER_HOME/KlipperScreen-env"
+    echo "  $(dirname "$KLIPPERSCREEN_ROOT")/.KlipperScreen-env"
+    echo "  $(dirname "$KLIPPERSCREEN_ROOT")/KlipperScreen-env"
     echo "Set KLIPPERSCREEN_VENV manually and re-run."
     exit 1
 fi
 
 # --- Detect KlipperScreen main script ---
-KLIPPERSCREEN_SCRIPT=""
-for candidate in /home/pi/KlipperScreen/screen.py /home/pi/KlipperScreen/KlipperScreen.py; do
-    if [ -f "$candidate" ]; then
-        KLIPPERSCREEN_SCRIPT="$candidate"
-        break
+KLIPPERSCREEN_SCRIPT="${KLIPPERSCREEN_SCRIPT:-}"
+if [ -n "$KLIPPERSCREEN_SCRIPT" ]; then
+    if [ ! -f "$KLIPPERSCREEN_SCRIPT" ]; then
+        echo "ERROR: KLIPPERSCREEN_SCRIPT is invalid: $KLIPPERSCREEN_SCRIPT" >&2
+        exit 1
     fi
-done
+else
+    for candidate in "$KLIPPERSCREEN_ROOT/screen.py" "$KLIPPERSCREEN_ROOT/KlipperScreen.py"; do
+        if [ -f "$candidate" ]; then
+            KLIPPERSCREEN_SCRIPT="$candidate"
+            break
+        fi
+    done
+fi
 if [ -z "$KLIPPERSCREEN_SCRIPT" ]; then
     echo "ERROR: Could not find KlipperScreen main script. Searched:"
-    echo "  /home/pi/KlipperScreen/screen.py"
-    echo "  /home/pi/KlipperScreen/KlipperScreen.py"
+    echo "  $KLIPPERSCREEN_ROOT/screen.py"
+    echo "  $KLIPPERSCREEN_ROOT/KlipperScreen.py"
     exit 1
 fi
 
 echo "=== KlipperScreen VNC setup ==="
+echo "  User:   $USER"
+echo "  Home:   $USER_HOME"
+echo "  Root:   $KLIPPERSCREEN_ROOT"
 echo "  Profile: $PROFILE"
 echo "  Venv:   $KLIPPERSCREEN_VENV"
 echo "  Script: $KLIPPERSCREEN_SCRIPT"
@@ -269,7 +328,7 @@ echo "[4/4] Enabling and starting service..."
 
 # Disable KlipperScreen screen blanking (prevents black screen over VNC)
 KS_CONF=""
-for d in /home/pi/printer_data/config /home/pi/klipper_config; do
+for d in "$USER_HOME/printer_data/config" "$USER_HOME/klipper_config"; do
     if [ -d "$d" ]; then
         KS_CONF="$d/KlipperScreen.conf"
         break
@@ -278,7 +337,7 @@ done
 if [ -n "$KS_CONF" ]; then
     if [ ! -f "$KS_CONF" ]; then
         echo -e "[main]\nscreen_blanking = off" > "$KS_CONF"
-        chown pi:pi "$KS_CONF" 2>/dev/null || true
+        chown "$USER:$USER" "$KS_CONF" 2>/dev/null || true
     elif ! grep -q "screen_blanking" "$KS_CONF"; then
         sed -i '/^\[main\]/a screen_blanking = off' "$KS_CONF"
     fi

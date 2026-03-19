@@ -3,12 +3,11 @@
 Standalone Rinkhals app that displays a remote KlipperScreen VNC session on the
 printer touchscreen and forwards touch input back to the VNC server.
 
-
-![KS1](../images/ksviewer_ks1.png)
 This app ships its own `fb-vnc-viewer` binary and can be installed on an
 existing Rinkhals system.
 
-WARNING: Only KS1 and K3 was tested. Support for other printers is still experimental and may not work correctly yet.
+WARNING: Only KS1 was tested properly. Support for other printers is still
+experimental and may not work correctly yet.
 
 Package mapping:
 - `update-k2p-k3.swu`: K2P, K3, K3V2
@@ -93,3 +92,53 @@ To stop the app and return to the normal printer UI:
 
 - run `/useremain/home/rinkhals/apps/klipperscreen-viewer/app.sh stop` over SSH
 - or touch and hold the top-left corner of the KlipperScreen view for more than 5 seconds
+
+## Full Uninstall
+
+### On the printer
+
+Stop the app first:
+
+```bash
+/useremain/home/rinkhals/apps/klipperscreen-viewer/app.sh stop
+```
+
+Then remove the app and its config:
+
+```bash
+rm -rf /useremain/home/rinkhals/apps/klipperscreen-viewer
+rm -f /useremain/rinkhals/klipperscreen-viewer.conf
+```
+
+If you installed it through the Rinkhals Apps UI, you can also disable or remove
+it there first, then delete the config file above if you want to remove all
+saved settings.
+
+### On the Raspberry Pi
+
+Stop and remove the Pi-side service and wrapper created by `rpi-setup.sh`:
+
+```bash
+sudo systemctl disable --now klipperscreen-vnc.service
+sudo rm -f /etc/systemd/system/klipperscreen-vnc.service
+sudo rm -f /usr/local/bin/klipperscreen-vnc.sh
+sudo systemctl daemon-reload
+```
+
+If this Pi only used TigerVNC for this viewer, you can also remove that package:
+
+```bash
+sudo apt-get remove -y tigervnc-standalone-server
+```
+
+`rpi-setup.sh` may also have added `screen_blanking = off` to your
+KlipperScreen config. Check one of these files, depending on your setup:
+
+```bash
+/home/pi/printer_data/config/KlipperScreen.conf
+/home/pi/klipper_config/KlipperScreen.conf
+```
+
+If you want to fully undo the setup, remove that line again. If the script
+created the whole file just for this setting and you do not need any other
+KlipperScreen customizations, you can delete the file instead.
