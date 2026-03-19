@@ -10,6 +10,9 @@ HEIGHT=480
 PORT=5900
 PROFILE=ks1
 VIEWER_ROTATION=180
+VNC_DEPTH=16
+VNC_QUALITY=6
+VNC_COMPRESS=6
 
 usage() {
     cat <<'EOF'
@@ -22,12 +25,15 @@ Options:
   --height <pixels>        Override VNC height
   --port <port>            Override VNC port (default: 5900)
   --rotation <deg>         Recommended printer-side viewer rotation: 0/90/180/270
+  --depth <bits>           VNC color depth: 16 or 24 (default: 16)
+  --quality <0-9>          JPEG quality level (default: 6)
+  --compress <0-9>         Compression level (default: 6)
   -h, --help               Show this help
 
 Examples:
   sudo bash rpi-setup.sh --profile ks1
   sudo bash rpi-setup.sh --profile k3
-  sudo bash rpi-setup.sh --width 480 --height 272 --rotation 270
+  sudo bash rpi-setup.sh --width 480 --height 272 --rotation 270 --depth 16 --quality 5 --compress 7
 EOF
 }
 
@@ -47,9 +53,9 @@ apply_profile() {
             ;;
         k3|k3v2|k2p)
             PROFILE="$1"
-            WIDTH=480
-            HEIGHT=272
-            VIEWER_ROTATION=270
+            WIDTH=272
+            HEIGHT=480
+            VIEWER_ROTATION=90
             ;;
         *)
             echo "ERROR: Unknown profile '$1'" >&2
@@ -86,6 +92,21 @@ while [ $# -gt 0 ]; do
             VIEWER_ROTATION="$2"
             shift 2
             ;;
+        --depth)
+            [ $# -lt 2 ] && usage >&2 && exit 1
+            VNC_DEPTH="$2"
+            shift 2
+            ;;
+        --quality)
+            [ $# -lt 2 ] && usage >&2 && exit 1
+            VNC_QUALITY="$2"
+            shift 2
+            ;;
+        --compress)
+            [ $# -lt 2 ] && usage >&2 && exit 1
+            VNC_COMPRESS="$2"
+            shift 2
+            ;;
         -h|--help)
             usage
             exit 0
@@ -97,6 +118,27 @@ while [ $# -gt 0 ]; do
             ;;
     esac
 done
+
+if [ "$VNC_DEPTH" != "16" ] && [ "$VNC_DEPTH" != "24" ]; then
+    echo "ERROR: --depth must be 16 or 24 (got '$VNC_DEPTH')" >&2
+    exit 1
+fi
+
+case "$VNC_QUALITY" in
+    [0-9]) ;;
+    *)
+        echo "ERROR: --quality must be 0..9 (got '$VNC_QUALITY')" >&2
+        exit 1
+        ;;
+esac
+
+case "$VNC_COMPRESS" in
+    [0-9]) ;;
+    *)
+        echo "ERROR: --compress must be 0..9 (got '$VNC_COMPRESS')" >&2
+        exit 1
+        ;;
+esac
 
 # --- Detect KlipperScreen venv ---
 KLIPPERSCREEN_VENV=""
@@ -134,6 +176,7 @@ echo "  Profile: $PROFILE"
 echo "  Venv:   $KLIPPERSCREEN_VENV"
 echo "  Script: $KLIPPERSCREEN_SCRIPT"
 echo "  VNC:    0.0.0.0:$PORT  (${WIDTH}x${HEIGHT})"
+echo "  VNC tuning: depth=$VNC_DEPTH quality=$VNC_QUALITY compress=$VNC_COMPRESS"
 echo "  Viewer: rotation $VIEWER_ROTATION on printer"
 echo ""
 
@@ -152,7 +195,27 @@ cat > "$WRAPPER" << EOF
 export DISPLAY=:1
 
 # Start Xtigervnc (X server + VNC in one)
-Xtigervnc :1 -geometry ${WIDTH}x${HEIGHT} -depth 24 -rfbport $PORT -SecurityTypes None &
+XTIGER_HELP="\$(Xtigervnc -help 2>&1 || true)"
+VNC_ARGS="-geometry ${WIDTH}x${HEIGHT} -depth ${VNC_DEPTH} -rfbport $PORT -SecurityTypes None"
+
+if echo "\$XTIGER_HELP" | grep -q -- "-QualityLevel"; then
+    VNC_ARGS="\$VNC_ARGS -QualityLevel ${VNC_QUALITY}"
+elif echo "\$XTIGER_HELP" | grep -q -- "-quality"; then
+    VNC_ARGS="\$VNC_ARGS -quality ${VNC_QUALITY}"
+else
+    echo "Xtigervnc: quality tuning option not supported, skipping"
+fi
+
+if echo "\$XTIGER_HELP" | grep -q -- "-CompressLevel"; then
+    VNC_ARGS="\$VNC_ARGS -CompressLevel ${VNC_COMPRESS}"
+elif echo "\$XTIGER_HELP" | grep -q -- "-compresslevel"; then
+    VNC_ARGS="\$VNC_ARGS -compresslevel ${VNC_COMPRESS}"
+else
+    echo "Xtigervnc: compression tuning option not supported, skipping"
+fi
+
+# shellcheck disable=SC2086
+Xtigervnc :1 \$VNC_ARGS &
 XTIGER_PID=\$!
 sleep 2
 
@@ -231,8 +294,14 @@ echo "Done! Check status with:"
 echo "  sudo journalctl -u klipperscreen-vnc.service -f"
 echo ""
 echo "VNC is now on port $PORT (no password)."
+echo "VNC tuning: depth=$VNC_DEPTH quality=$VNC_QUALITY compress=$VNC_COMPRESS"
 echo "Configured profile: $PROFILE (${WIDTH}x${HEIGHT}), recommended printer rotation: $VIEWER_ROTATION"
 echo "On the printer, set VNC_HOST to this RPi's IP in:"
 echo "  /useremain/rinkhals/klipperscreen-viewer.conf"
 echo "Optional printer override if auto-detection is wrong:"
 echo "  VIEWER_ROTATION=$VIEWER_ROTATION"
+if [ "$VNC_DEPTH" = "16" ]; then
+    echo "  VNC_COLOR_DEPTH=16"
+else
+    echo "  VNC_COLOR_DEPTH=32"
+fi
