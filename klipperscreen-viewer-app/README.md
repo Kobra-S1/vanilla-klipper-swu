@@ -3,53 +3,93 @@
 Standalone Rinkhals app that displays a remote KlipperScreen VNC session on the
 printer touchscreen and forwards touch input back to the VNC server.
 
+
+![KS1](../images/ksviewer_ks1.png)
 This app ships its own `fb-vnc-viewer` binary and can be installed on an
 existing Rinkhals system.
 
-WARNING: Only KS1 was tested, support for other printers is not tested at all and will propably not work yet.
+WARNING: Only KS1 and K3 was tested. Support for other printers is still experimental and may not work correctly yet.
 
 Package mapping:
 - `update-k2p-k3.swu`: K2P, K3, K3V2
 - `update-ks1.swu`: KS1, KS1M
 - `update-k3m.swu`: K3M
 
-## App configuration
-Edit this textfile on the printer `/useremain/rinkhals/klipperscreen-viewer.conf`to configure the app.
-At least the IP to the vnc-server needs to be provided there:
+## App Configuration
+
+Edit this file on the printer:
 
 ```bash
-VNC_HOST=<rpi-ip>
-```
-## Raspberry Pi setup
-Install procedure to install the needed vnc-server, klipper-screen-vnc service with KS1 profile.
-Assumption is, you already have klipper-screen installed ony our RPI (if not, use kiauh to do that before).
-
-(If your are using also my ACEPRO klipper-screen, also update that one (acepro.py) as it got recent update to fit more nicely on the KS1 display).
-
-Download the script into your RPI, make it executable and run setup with KS1 profile:
-```
-wget -O rpi-setup.sh https://raw.githubusercontent.com/Kobra-S1/vanilla-klipper-swu/main/klipperscreen-viewer-app/rpi-setup.sh
-
-chmod +x rpi-setup.sh
-sudo ./rpi-setup.sh --profile ks1
-```
-After that, the RPI has installed the necessary vnc-server and starts a dedicated klipper-screen systemd service.
-Keep that in mind if you change anything in klipper screen itself, for change taking effect you also need to restart this additional service.
-
-## Install
-
-Install the SWU from USB as `update.swu` to your printer, 
-
-IMPORTANT: Update in the configuration file afterwards the IP of your RPI,so the viewer know where to connect to.
-
-```
 /useremain/rinkhals/klipperscreen-viewer.conf
 ```
 
-Then start/enable the app from the Rinkhals App UI or run:
+At minimum, set the VNC server IP or hostname:
 
+```bash
+VNC_HOST=<rpi-ip-or-hostname>
 ```
+
+Most installations should leave the model-specific settings empty. The app
+auto-detects the printer model and applies the correct defaults for rotation
+and touch handling. Only override those values if you know you need to.
+
+## Raspberry Pi Setup
+
+This assumes KlipperScreen is already installed on the Raspberry Pi. If not,
+install it first, for example with KIAUH.
+
+If you also use the ACE Pro KlipperScreen integration, update that too before
+testing this viewer so the layout matches the printer screen better.
+
+Download the setup script to the Raspberry Pi, make it executable, and run it
+with the matching printer profile. Example for KS1:
+
+```bash
+wget -O rpi-setup.sh https://raw.githubusercontent.com/Kobra-S1/vanilla-klipper-swu/main/klipperscreen-viewer-app/rpi-setup.sh
+chmod +x rpi-setup.sh
+sudo ./rpi-setup.sh --profile ks1
+```
+
+Example profiles:
+- `ks1`
+- `ks1m`
+- `k3`
+- `k3v2`
+- `k2p`
+- `k3m`
+
+This installs the required VNC server and creates a dedicated
+`klipperscreen-vnc` systemd service on the Pi.
+
+If you later change KlipperScreen itself, restart that Pi-side service so the
+changes take effect.
+
+## Install On Printer
+
+Install the correct SWU from USB as `update.swu` on the printer.
+
+After installation, update the app config on the printer so the viewer knows
+where to connect:
+
+```bash
+/useremain/rinkhals/klipperscreen-viewer.conf
+```
+
+At minimum:
+
+```bash
+VNC_HOST=<rpi-ip-or-hostname>
+```
+
+Then start or enable the app from the Rinkhals Apps UI, or run:
+
+```bash
 /useremain/home/rinkhals/apps/klipperscreen-viewer/app.sh start
 ```
 
-To stop the app and get K3SysUI back, either call the above script with "stop" via ssh, or touch and hold for >5 seconds the top left corner of the klipperscreen.
+## Stop
+
+To stop the app and return to the normal printer UI:
+
+- run `/useremain/home/rinkhals/apps/klipperscreen-viewer/app.sh stop` over SSH
+- or touch and hold the top-left corner of the KlipperScreen view for more than 5 seconds
