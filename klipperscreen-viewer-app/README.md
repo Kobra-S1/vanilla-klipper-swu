@@ -6,6 +6,8 @@ printer touchscreen and forwards touch input back to the VNC server.
 This app ships its own `fb-vnc-viewer` binary and can be installed on an
 existing Rinkhals system.
 
+WARNING: Only KS1 was tested, support for other printers is not tested at all and will propably not work yet.
+
 Package mapping:
 - `update-k2p-k3.swu`: K2P, K3, K3V2
 - `update-ks1.swu`: KS1, KS1M
@@ -30,55 +32,27 @@ Optional override in `/useremain/rinkhals/klipperscreen-viewer.conf`:
 VNC_HOST=<rpi-ip>
 ```
 ## Raspberry Pi setup
+Install cheat-sheet for KS1 profile.
 
-Use `rpi-setup.sh` to configure a headless TigerVNC/X display for KlipperScreen.
-
-Examples:
-
-```bash
-sudo bash rpi-setup.sh --profile ks1
-sudo bash rpi-setup.sh --profile ks1m
-sudo bash rpi-setup.sh --profile k3
-sudo bash rpi-setup.sh --profile k3v2
-sudo bash rpi-setup.sh --profile k2p
-sudo bash rpi-setup.sh --profile k3m
+Download the script into your RPI, make it executable and run setup with KS1 profile:
 ```
+wget -O rpi-setup.sh https://raw.githubusercontent.com/Kobra-S1/vanilla-klipper-swu/main/klipperscreen-viewer-app/rpi-setup.sh
 
-Supported arguments:
-- `--profile <name>` or `--printer-model <name>`
-- `--width <pixels>`
-- `--height <pixels>`
-- `--port <port>`
-- `--rotation <deg>`
-
-Pi-side profile mapping:
-
-| Profile | VNC geometry | Recommended printer rotation |
-|---|---:|---:|
-| `ks1` | 800x480 | 180 |
-| `ks1m` | 800x480 | 180 |
-| `k3m` | 480x272 | 90 |
-| `k3` | 480x272 | 270 |
-| `k3v2` | 480x272 | 270 |
-| `k2p` | 480x272 | 270 |
-
-If needed, you can bypass profiles completely:
-
-```bash
-sudo bash rpi-setup.sh --width 480 --height 272 --rotation 270
+chmod +x rpi-setup.sh
+sudo ./rpi-setup.sh --profile ks1
 ```
 
 ## Install
 
-Install the generated SWU from USB as `update.swu`, 
+Install the SWU from USB as `update.swu` to your printer, 
 
-Set the printer-side config at:
+IMPORTANT: Update in the configuration file the IP of your RPI,so the viewer know where to connect to.
 
 ```
 /useremain/rinkhals/klipperscreen-viewer.conf
 ```
 
-Then enable the app and start it from the Rinkhals UI or run:
+Then start/enable the app from the Rinkhals App UI or run:
 
 ```
 /useremain/home/rinkhals/apps/klipperscreen-viewer/app.sh start
