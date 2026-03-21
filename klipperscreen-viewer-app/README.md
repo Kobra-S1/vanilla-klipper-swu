@@ -6,8 +6,7 @@ printer touchscreen and forwards touch input back to the VNC server.
 This app ships its own `fb-vnc-viewer` binary and can be installed on an
 existing Rinkhals system.
 
-WARNING: Only KS1 was tested properly. Support for other printers is still
-experimental and may not work correctly yet.
+WARNING: Only KS1 and K3 was tested properly. Support for other printers (KS1M, K2P,K3m) may not work correctly yet. I dont have those printers, so cant test.
 
 Package mapping:
 - `update-k2p-k3.swu`: K2P, K3, K3V2
