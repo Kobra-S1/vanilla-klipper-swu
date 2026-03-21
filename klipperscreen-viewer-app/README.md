@@ -93,6 +93,8 @@ To stop the app and return to the normal printer UI:
 - run `/useremain/home/rinkhals/apps/klipperscreen-viewer/app.sh stop` over SSH
 - or touch and hold the top-left corner of the KlipperScreen view for more than 5 seconds
 
+> **Notice:** Closing the app (e.g. via long press) has side effects on the built-in printer UI. Because `K3SysUI` has to be killed and restarted in the background, it will likely experience glitches and not function correctly afterwards. Closing the viewer app is primarily intended as an emergency escape to reach the Rinkhals UI so you can stop or disable the app if needed. A full restart of the printer is highly recommended after closing it. This app is targeted to use the display fully as a continuous KlipperScreen viewer.
+
 ## Full Uninstall
 
 ### On the printer

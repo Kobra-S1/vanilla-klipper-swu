@@ -306,7 +306,9 @@ chmod +x "$WRAPPER"
 
 # --- Create systemd service ---
 echo "[3/4] Creating $SERVICE..."
-cat > "$SERVICE" << 'EOF'
+USER_GROUP=$(id -gn "$USER")
+
+cat > "$SERVICE" << EOF
 [Unit]
 Description=KlipperScreen VNC (for printer display)
 After=network.target moonraker.service
@@ -314,6 +316,8 @@ Wants=moonraker.service
 
 [Service]
 Type=simple
+User=$USER
+Group=$USER_GROUP
 ExecStart=/usr/local/bin/klipperscreen-vnc.sh
 Restart=on-failure
 RestartSec=5
