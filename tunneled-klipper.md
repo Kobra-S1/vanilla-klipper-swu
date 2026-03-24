@@ -16,12 +16,6 @@ Additional Required Hardware:
 - OTG USB-C to USB-C+USB-A "Y" Adapter (buy a quality one which is capable of providing 5A for the RPI; simple ones often limit to max 3A). Alternative: Power RPI via 5V GPIO pin, connect USB-C port via USB cable directly (via the DC-DC blocker to avoid back-powering) to the printer.
 
 - Optional: For ACE Pro connection ONE USB to ACE Pro 4-pin connector adapter is necessary (you have to build your own, see ACE Pro driver repo: https://github.com/Kobra-S1/ACEPRO/tree/dev). You only need one adapter, even if multiple ACE Pro units need to be connected, as each ACE Pro is connected in a daisy-chain style to each other, so only the first ACE Pro in the chain needs to be connected to the RPi.
----
-
-## ⚠️ Important Warning
-
-- Note for KS1: Better **NOT** click **Enable App** in Rinkhals, unless you are fine to use SSH to disable the app when needed.  
-- At first try out, only use **Start App**. Otherwise the printer config menu may not be reachable anymore; you'll need SSH or an `installer.swu` to recover and disable the app. If you like, you can always later on come back and use **Enable App** to switch on automatic start.
 
 ---
 
