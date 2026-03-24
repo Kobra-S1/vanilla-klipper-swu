@@ -96,25 +96,10 @@ Otherwise, using [vanilla-klipper](vanilla-klipper.md) directly on the SoC is an
 
 ## ⚙️ Starting Tunneled-Klipper
 
-### Do **not** enable at boot (for now)
-
-- Do **not** tick the checkbox next to **tunneled-klipper**.  
-- Do **not** press **Enable App**.  
-- If enabled, the app will auto-start at boot, but switching to the **Settings** tab can lead to “Printer not ready…” and a blocked UI.  
-  To unblock the UI via SSH on the Kobra S1:
-  ```bash
-  cd /useremain/home/rinkhals/apps/tunneled-klipper/
-  ./app.sh stop
-  ```
-
-_Screenshots:_  
-<img src="images/tunnel_app_menu.png" alt="tunneled-klipper app menu" width="40%">  
-<img src="images/tunnel.png" alt="tunneled-klipper running" width="40%">
-
 ### Start/stop the app manually
 
 - Open the **tunneled-klipper** entry by tapping its name.  
-- Press **Start App** to start it (⚠️ do **not** press **Enable App**).  
+- Press **Start App** to start it only for this power-cycle, or press **Enable App** to enable automatic startup.
   A double-beep confirms the app has started; another two beeps also occur if the RPi is already connected and serial ports are detected.
 - Use the same button to stop/restart GoKlipper as needed.
 
