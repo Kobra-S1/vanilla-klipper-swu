@@ -18,9 +18,8 @@ This repository contains experimental test builds of:
 
 ## ⚠️ General Notes
 - You need to have Rinkhals installed on your Anycubic Kobra S1 and Kobra 3 / 3V2, as this is the host starting these APPs
-- These builds are fairly stable but also still **experimental**.  
-- Some hardware features may not work or may only function when combined with tunneled-klipper + RPi4 (e.g., LIS2DW12 resonance testing).  
-- Currently only **Mainsail Web Interface** is supported (UI control via Anycubic UI on the display with vanilla-klipper is very limited). I recommend installing KlipperScreen with a dedicated LCD display for ease of use.
+- With the App version, some hardware features may not work (e.g., LIS2DW12 resonance testing) as needed python modules are missing in Rinkhals Python environment. They work when combined with tunneled-klipper + RPi4
+- For the App version, currently only **Web Interface** is usefull to interact with klipper (UI control via Anycubic UI on the display with vanilla-klipper is very limited). I recommend installing KlipperScreen with a dedicated LCD display for ease of use.
 
 👉 Choose your setup:
 
