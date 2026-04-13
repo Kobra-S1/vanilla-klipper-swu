@@ -1,6 +1,6 @@
 # Tunneled-Klipper App for Rinkhals on Anycubic Kobra S1 / Kobra 3
 
-The **tunneled-klipper** app forwards the printer's MCUs serial interface connections to an SBC which supports OTG USB serial gadget mode (for example Raspberry Pi 4/5/Zero W2 or BTT Pi2).
+The **tunneled-klipper** app forwards the printer's MCUs serial interface connections to an SBC which supports OTG USB serial gadget mode (for example Raspberry Pi 4/5, Compute Module 4/5, Zero 2 W, or BTT Pi2).
 This lets you run Klipper on the external SBC while the tunneled-klipper APP (running on the Kobra printers SoC, hosted by Rinkhals) acts as a serial bridge to the MCUs.
 
 Overview of the general setup:
@@ -10,22 +10,27 @@ Overview of the general setup:
 </p>
 
 Additional Required Hardware:
-- Raspberry Pi 4/5, BTT Pi2, or any other SBC with serial gadget OTG support
+- Raspberry Pi 4/5, Compute Module 4/5, Zero 2 W, BTT Pi2, or any other SBC with serial gadget OTG support
+(⚠️ **Raspberry Pi Zero 2 W note:** Zero 2 W support is included only because it is capable of OTG serial gadget mode. It is **not recommended** to run Klipper on Zero 2 W for regular use because CPU and RAM resources are very limited.)
+
 - USB-A to USB-A cable to connect the SBC with Kobra printer via OTG adapter
 - USB-A DC-DC Blocker to prevent backpowering of the printer via the USB-A connection by the SBC
 - OTG USB-C to USB-C+USB-A "Y" Adapter (buy a quality one which is capable of providing enough current for your SBC; simple ones often limit to max 3A). Alternative: Power the SBC via 5V GPIO pin, connect USB-C port via USB cable directly (via the DC-DC blocker to avoid back-powering) to the printer.
 
-- Optional: For ACE Pro connection ONE USB to ACE Pro 4-pin connector adapter is necessary (you have to build your own, see ACE Pro driver repo: https://github.com/Kobra-S1/ACEPRO/tree/dev). You only need one adapter, even if multiple ACE Pro units need to be connected, as each ACE Pro is connected in a daisy-chain style to each other, so only the first ACE Pro in the chain needs to be connected to the SBC.
+- Optional: For ACE Pro connection ONE USB to ACE Pro 4-pin connector adapter is necessary (you have to build your own, see ACE Pro driver repo: https://github.com/Kobra-S1/ACEPRO/tree/dev). You only need one adapter, even if multiple ACE Pro units need to be connected, as each ACE Pro is connected in a daisy-chain style to each other, so only the first ACE Pro in the chain needs to be connected to the SBC. Current known limit: maximum 3 ACE Pro units can be daisy-chained due to limitations of the ACE Pro internal USB hub.
 
 ---
 
 ## 🛠️ Requirements
 
-- SBC with OTG Serial Gadgetmode support. Script-based setup is tested on Raspberry Pi 4/5 and BTT Pi2 (CB2/Armbian).
+- SBC with OTG Serial Gadgetmode support. Script-based setup is tested on Raspberry Pi 4/5, Compute Module 4/5, Zero 2 W, and BTT Pi2 (CB2/Armbian).
 - USB-C to USB-A OTG cable with an additional USB power blocker  
 - Additional USB serial-gadget setup and vanilla-Klipper installation on your SBC (not covered here)
 - Installation of klipper ACEPro driver (with optional Klipperscreen support) if you want to use the ACE-Pro (https://github.com/Kobra-S1/ACEPRO/tree/dev)
-- BTT Pi2 image source: https://github.com/bigtreetech/CB2/releases
+- Installation of klipperscreen-viewer app if you want to use the printer screen itself as KlipperScreen ([klipperscreen-viewer-app/README.md](klipperscreen-viewer-app/README.md))
+
+
+
 
 For details, you can find some information in the **#tunneled-klipper** channel on the Rinkhals Discord.
 But most helpful will be the two installation helper scripts, which you can find here:
@@ -38,7 +43,7 @@ or as an alternative:
 An Ansible-based installation:
 - [configure-tunneled-raspberry-pi](ansible/configure-tunneled-raspberry-pi/)
 
-Note: The Ansible playbook is currently not updated for BTT Pi2 and supports only Raspberry Pi 4/5.
+Note: The Ansible playbook is currently not updated for BTT Pi2 or Raspberry Pi Zero 2 W and supports only Raspberry Pi 4/5.
 
 Example setup for Kobra-S1:
 
@@ -100,7 +105,7 @@ Otherwise, using [vanilla-klipper](vanilla-klipper.md) directly on the SoC is an
   A double-beep confirms the app has started; another two beeps also occur if the external SBC is already connected and serial ports are detected.
 - Use the same button to stop/restart GoKlipper as needed.
 
-### SBC setup (RPi4/RPi5/BTT Pi2)
+### SBC setup (RPi4/RPi5/CM4/CM5/RPi Zero 2 W/BTT Pi2)
 
 - Install Klipper on your SBC as usual, by using this forked Klipper branch: https://github.com/Kobra-S1/klipper-kobra-s1/tree/Kobra-S1-Dev  
   **IMPORTANT:** Check out the "dev" branch, don't use 'main' (which is just the currently used base for the Kobra-S1 patches)
@@ -138,7 +143,7 @@ Afterwards execute:
 
 - When the app starts, it waits for two serial-gadget interfaces to appear and then uses the Linux-assigned serial-port names for the `socat` tunnels. This name detection avoids collisions with ACE-PRO-assigned `/dev/ttyACMx` names.
 
-- SBC detection for setup is available in `setup_tunnel_klipper.sh` via auto-detect or manual selection (RPi4, RPi5, BTT Pi2). Runtime tunnel detection on the printer side still expects compatible USB gadget serial devices.
+- SBC detection for setup is available in `setup_tunnel_klipper.sh` via auto-detect or manual selection (RPi4, RPi5, CM4, CM5, RPi Zero 2 W, BTT Pi2). Runtime tunnel detection on the printer side still expects compatible USB gadget serial devices.
 
 - The SBC can already be connected when you start the app, but you can also start it first and connect later.  
   Disconnecting/reconnecting USB while the tunneled app is running is supported. If a `socat` connection breaks due to USB interruption, the MCUs are reset; use **FIRMWARE RESTART** in Mainsail to re-establish the connection.

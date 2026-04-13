@@ -20,8 +20,17 @@ detect_target() {
         *"Raspberry Pi 5"*)
             echo "pi5"
             ;;
+        *"Compute Module 4"*)
+            echo "cm4"
+            ;;
+        *"Compute Module 5"*)
+            echo "cm5"
+            ;;
         *"BigTreeTech CB2"*|*"BTT"*|*"CB2"*)
             echo "btt_pi2"
+            ;;
+        *"Raspberry Pi Zero 2"*)
+            echo "pi0"
             ;;
         *)
             echo "unknown"
@@ -44,7 +53,11 @@ configure_pi_boot_config() {
 
     echo "=== Configuring ${config_file} for ${block_name} ==="
     if grep -q "^\[$block_name\]" "$config_file"; then
-        if ! awk -v blk="$block_name" '/^\[/{f=($0=="["blk"]")?1:0} f && /^dtoverlay=dwc2/' "$config_file" >/dev/null; then
+        if ! awk -v blk="[$block_name]" '
+            /^\[/ { in_section = ($0 == blk) }
+            in_section && /^dtoverlay=dwc2/ { found=1 }
+            END { exit !found }
+        ' "$config_file"; then
             sed -i "/^\[$block_name\]/a dtoverlay=dwc2" "$config_file"
         fi
     else
@@ -87,7 +100,7 @@ configure_modules_for_target() {
     local target="$1"
 
     echo "=== Configuring /etc/modules for ${target} ==="
-    if [[ "$target" == "pi4" || "$target" == "pi5" ]]; then
+    if [[ "$target" == "pi4" || "$target" == "pi5" || "$target" == "pi0" || "$target" == "cm4" || "$target" == "cm5" ]]; then
         ensure_module_line "dwc2"
         ensure_module_line "libcomposite"
     elif [[ "$target" == "btt_pi2" ]]; then
@@ -116,17 +129,26 @@ elif [[ "$SELECTION_MODE" == "2" ]]; then
     echo "Select target board:"
     echo "1) Raspberry Pi 4"
     echo "2) Raspberry Pi 5"
-    echo "3) BTT Pi2 (BigTreeTech CB2)"
-    read -rp "Please enter number (1, 2 or 3): " TARGET_CHOICE
+    echo "3) Raspberry Pi Compute Module 4 (CM4)"
+    echo "4) Raspberry Pi Compute Module 5 (CM5)"
+    echo "5) BTT Pi2 (BigTreeTech CB2)"
+    echo "6) Raspberry Pi Zero 2 W"
+    read -rp "Please enter number (1, 2, 3, 4, 5 or 6): " TARGET_CHOICE
 
     if [[ "$TARGET_CHOICE" == "1" ]]; then
         TARGET="pi4"
     elif [[ "$TARGET_CHOICE" == "2" ]]; then
         TARGET="pi5"
     elif [[ "$TARGET_CHOICE" == "3" ]]; then
+        TARGET="cm4"
+    elif [[ "$TARGET_CHOICE" == "4" ]]; then
+        TARGET="cm5"
+    elif [[ "$TARGET_CHOICE" == "5" ]]; then
         TARGET="btt_pi2"
+    elif [[ "$TARGET_CHOICE" == "6" ]]; then
+        TARGET="pi0"
     else
-        echo "Invalid selection. Please enter 1, 2 or 3."
+        echo "Invalid selection. Please enter 1, 2, 3, 4, 5 or 6."
         exit 1
     fi
     TARGET_SOURCE="manual"
@@ -137,7 +159,7 @@ fi
 
 echo "=== Selected target: ${TARGET} (${TARGET_SOURCE}) ==="
 
-if [[ "$TARGET" == "pi4" || "$TARGET" == "pi5" ]]; then
+if [[ "$TARGET" == "pi4" || "$TARGET" == "pi5" || "$TARGET" == "pi0" || "$TARGET" == "cm4" || "$TARGET" == "cm5" ]]; then
     configure_pi_boot_config "$TARGET"
 elif [[ "$TARGET" == "btt_pi2" ]]; then
     configure_btt_pi2_boot_config
@@ -305,14 +327,17 @@ fi
 EOF
 
 
-echo "################################################################################################################"
-echo "After KIAUH has installed Klipper, run this once manually to optimize serial connections at klipper start:"
-echo ""
-echo "sudo sed -i '/^ExecStart=/i ExecStartPre=/bin/stty -F /dev/ttyGS1 sane' /etc/systemd/system/klipper.service"
-echo "sudo sed -i '/^ExecStart=/i ExecStartPre=/bin/stty -F /dev/ttyGS0 sane' /etc/systemd/system/klipper.service"
-echo "sudo systemctl daemon-reload"
-echo "sudo systemctl restart klipper.service"
-echo "################################################################################################################"
+print_post_kiauh_reminder() {
+    echo ""
+    echo "################################################################################################################"
+    echo "After KIAUH has installed Klipper, run this once manually to optimize serial connections at klipper start:"
+    echo ""
+    echo "sudo sed -i '/^ExecStart=/i ExecStartPre=/bin/stty -F /dev/ttyGS1 sane' /etc/systemd/system/klipper.service"
+    echo "sudo sed -i '/^ExecStart=/i ExecStartPre=/bin/stty -F /dev/ttyGS0 sane' /etc/systemd/system/klipper.service"
+    echo "sudo systemctl daemon-reload"
+    echo "sudo systemctl restart klipper.service"
+    echo "################################################################################################################"
+}
 
 if [[ "${SKIP_KIAUH:-0}" == "1" ]]; then
     echo "SKIP_KIAUH=1 set, not launching KIAUH automatically."
@@ -320,4 +345,5 @@ else
     echo "Starting KIAUH now as user $NORMAL_USER ..."
     sleep 2
     sudo -u "$NORMAL_USER" bash -c 'cd ~/kiauh && ./kiauh.sh'
+    print_post_kiauh_reminder
 fi

@@ -1,6 +1,6 @@
-# 🥧 Raspberry Pi / BTT Pi2 — Setup Tunnel Tutorial
+# 🥧 Raspberry Pi / Raspberry Pi Zero 2 W / BTT Pi2 — Setup Tunnel Tutorial
 
-This tutorial explains how to set up a Raspberry Pi 4/5 or BTT Pi2 (BigTreeTech CB2) and prepare it as a USB Serial Bridge (e.g., for Klipper).
+This tutorial explains how to set up a Raspberry Pi 4/5, Compute Module 4/5, Zero 2 W, or BTT Pi2 (BigTreeTech CB2) and prepare it as a USB Serial Bridge (e.g., for Klipper).
 
 ---
 
@@ -24,9 +24,13 @@ This tutorial explains how to set up a Raspberry Pi 4/5 or BTT Pi2 (BigTreeTech 
 
 ## 📦 Requirements
 
-* Raspberry Pi 4 or 5 (Raspberry Pi OS Lite 64-bit), or BTT Pi2 (Armbian)
+* Raspberry Pi 4, 5, Compute Module 4/5, or Zero 2 W (Raspberry Pi OS Lite 64-bit), or BTT Pi2 (Armbian)
 * SD card
 * Raspberry Pi Imager (for Raspberry Pi boards) or Armbian image tool of your choice (for BTT Pi2)
+
+> ⚠️ **Raspberry Pi Zero 2 W note:** Zero 2 W is listed only because it supports OTG serial gadget mode. It is **not recommended** for Klipper workloads due to limited CPU and RAM.
+>
+> If you still use Zero 2 W, avoid running camera streaming (for example crowsnest) on the same device to reduce load and help prevent MCU communication errors during prints.
 
 ---
 
@@ -102,7 +106,10 @@ Manual selection currently supports:
 
 * Raspberry Pi 4
 * Raspberry Pi 5
+* Raspberry Pi Compute Module 4 (CM4)
+* Raspberry Pi Compute Module 5 (CM5)
 * BTT Pi2 (BigTreeTech CB2)
+* Raspberry Pi Zero 2 W
 
 For **BTT Pi2**, the script configures `/boot/armbianEnv.txt` and may report that a reboot is required before `ports.service` can start.
 
@@ -117,7 +124,7 @@ Expected after successful setup: `Active: active (exited)`.
 
 If startup fails (for example no UDC available yet), `ports.service` retries automatically with a short delay.
 
-Ansible note: the Ansible setup in this repository is currently not updated for BTT Pi2 and supports only Raspberry Pi 4/5.
+Ansible note: the Ansible setup in this repository is currently not updated for BTT Pi2 or Raspberry Pi Zero 2 W and supports only Raspberry Pi 4/5.
 
 ---
 

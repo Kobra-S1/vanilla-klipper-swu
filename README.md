@@ -12,7 +12,7 @@
 This repository contains experimental test builds of:
 
 - **[Vanilla-Klipper](vanilla-klipper.md)** → Run Klipper natively on the Anycubic Kobra S1 and K3 series SoC under Rinkhals. Vanilla-klipper app now includes the **[ACEPro driver](https://github.com/Kobra-S1/ACEPRO/tree/dev)** for multi-color/multi-material support.
-- **[Tunneled-Klipper](tunneled-klipper.md)** → Instead of running Klipper on the printer SoC, it forwards serial comms over USB gadget mode to an external SBC (for example Raspberry Pi 4/5 or BTT Pi2).
+- **[Tunneled-Klipper](tunneled-klipper.md)** → Instead of running Klipper on the printer SoC, it forwards serial comms over USB gadget mode to an external SBC (for example Raspberry Pi 4/5/Zero 2 W or BTT Pi2).
 
 ---
 
@@ -24,7 +24,7 @@ This repository contains experimental test builds of:
 👉 Choose your setup:
 
 - If you want Klipper directly on the printer → [**vanilla-klipper.md**](vanilla-klipper.md)  
-- If you want to offload Klipper to an external SBC (RPi4/RPi5/BTT Pi2) → [**tunneled-klipper.md**](tunneled-klipper.md)  
+- If you want to offload Klipper to an external SBC (RPi4/RPi5/RPi Zero 2 W/BTT Pi2) → [**tunneled-klipper.md**](tunneled-klipper.md)  
 
 For discussion, see the Rinkhals Discord:
 - **[#vanilla-klipper channel](https://discordapp.com/channels/1332498592539345069/1344072676477632543)**
@@ -42,7 +42,7 @@ For discussion, see the Rinkhals Discord:
 
 ### 📖 Installation & Setup Guides
 - **[Klipper Installation on RPi](klipper_install.md)** - Step-by-step guide for installing Klipper on Raspberry Pi using KIAUH
-- **[Tunnel Setup Guide](SetupRaspberryPiTunnel.md)** - Configure Raspberry Pi or BTT Pi2 tunnel for tunneled-klipper setup
+- **[Tunnel Setup Guide](SetupRaspberryPiTunnel.md)** - Configure Raspberry Pi (including Zero 2 W) or BTT Pi2 tunnel for tunneled-klipper setup
 - **[Vanilla Klipper Setup](vanilla-klipper.md)** - Detailed vanilla-klipper installation and configuration
 - **[Tunneled Klipper Setup](tunneled-klipper.md)** - Detailed tunneled-klipper installation and configuration
 
@@ -50,7 +50,7 @@ Note: The Ansible tunnel setup currently supports Raspberry Pi 4/5 only.
 
 ### 🛠️ Utilities & Scripts 
 - **[Tunnel Control Script](tunnel_control.sh)** - Manage LED and Tunnel App from Raspberry Pi 
-- **[Setup Tunnel Script](setup_tunnel_klipper.sh)** - Automated tunnel setup for RPi4/RPi5/BTT Pi2
+- **[Setup Tunnel Script](setup_tunnel_klipper.sh)** - Automated tunnel setup for RPi4/RPi5/RPi Zero 2 W/BTT Pi2
 
 ### 📦 Downloads
 - **[Releases](releases/)** - Latest Klipper app builds for Rinkhals (.swu files)
