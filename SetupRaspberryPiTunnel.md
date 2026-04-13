@@ -1,6 +1,6 @@
-# 🥧 Raspberry Pi 4 & 5 — Setup Tunnel Tutorial
+# 🥧 Raspberry Pi / BTT Pi2 — Setup Tunnel Tutorial
 
-This tutorial explains how to set up a Raspberry Pi 4 or 5 with Raspberry Pi OS Lite and prepare it as a USB Serial Bridge (e.g., for Klipper).
+This tutorial explains how to set up a Raspberry Pi 4/5 or BTT Pi2 (BigTreeTech CB2) and prepare it as a USB Serial Bridge (e.g., for Klipper).
 
 ---
 
@@ -24,9 +24,9 @@ This tutorial explains how to set up a Raspberry Pi 4 or 5 with Raspberry Pi OS 
 
 ## 📦 Requirements
 
-* Raspberry Pi 4 or 5
+* Raspberry Pi 4 or 5 (Raspberry Pi OS Lite 64-bit), or BTT Pi2 (Armbian)
 * SD card
-* Raspberry Pi Imager
+* Raspberry Pi Imager (for Raspberry Pi boards) or Armbian image tool of your choice (for BTT Pi2)
 
 ---
 
@@ -37,6 +37,11 @@ Open the **Raspberry Pi Imager**:
 ![Rasp\_imager1](images/Rasp_imager1.jpg)
 
 Select your **Pi model**, the **operating system (Raspberry Pi OS Lite 64-bit)**, and your **SD card**.
+
+For **BTT Pi2**, flash a current **Armbian Bookworm** image and boot it once.
+
+Official BTT CB2 image releases:
+- https://github.com/bigtreetech/CB2/releases
 
 ---
 
@@ -70,23 +75,49 @@ Save the settings and write the image to the SD card. Your **SD card is now read
 
 ## 5️⃣ Start Your SSH Connection
 
-Use an SSH client (e.g. **PuTTY**, **MobaXterm**, or **Terminal**) to connect to your Raspberry Pi:
+Use an SSH client (e.g. **PuTTY**, **MobaXterm**, or **Terminal**) to connect to your SBC:
 
 ```bash
-ssh pi@<RPI-IP-ADDRESS>
+ssh <USER>@<SBC-IP-ADDRESS>
 ```
 
 ---
 
 ## 6️⃣ Download and Run the Installation Script
 
-Download and execute the **[`setup_tunnel_klipper.sh`](setup_tunnel_klipper.sh)** script directly on your Raspberry Pi:
+Download and execute the **[`setup_tunnel_klipper.sh`](setup_tunnel_klipper.sh)** script directly on your SBC:
 
 ```bash
 wget https://raw.githubusercontent.com/Kobra-S1/vanilla-klipper-swu/main/setup_tunnel_klipper.sh
 chmod +x setup_tunnel_klipper.sh
 sudo ./setup_tunnel_klipper.sh
 ```
+
+The script now asks first:
+
+* **1) Auto-detect**
+* **2) Manual selection**
+
+Manual selection currently supports:
+
+* Raspberry Pi 4
+* Raspberry Pi 5
+* BTT Pi2 (BigTreeTech CB2)
+
+For **BTT Pi2**, the script configures `/boot/armbianEnv.txt` and may report that a reboot is required before `ports.service` can start.
+
+If that happens, reboot once and run:
+
+```bash
+sudo systemctl restart ports.service
+sudo systemctl status ports.service
+```
+
+Expected after successful setup: `Active: active (exited)`.
+
+If startup fails (for example no UDC available yet), `ports.service` retries automatically with a short delay.
+
+Ansible note: the Ansible setup in this repository is currently not updated for BTT Pi2 and supports only Raspberry Pi 4/5.
 
 ---
 
