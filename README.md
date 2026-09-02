@@ -66,6 +66,6 @@ Thanks to the following contributors for their work on documentation, installati
 - **[moosbewohner](https://github.com/moosbewohner)**
 - **[m4d53](https://github.com/m4d53)**
 - **[NUKY](https://github.com/xNuky)**
-- **[Gewbster](https://github.com/Gewbster)**
+- **[Gwebster-r](https://github.com/Gwebster-r)**
 
 This project builds upon the excellent work of the Rinkhals and Klipper communities.
