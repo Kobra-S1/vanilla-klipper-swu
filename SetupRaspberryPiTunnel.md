@@ -1,6 +1,8 @@
 # 🥧 Raspberry Pi / Raspberry Pi Zero 2 W / BTT Pi2 — Setup Tunnel Tutorial
 
-> **Tunneled-Klipper setup:** [1. Overview and printer app](tunneled-klipper.md) &rarr; **2. SBC setup** &rarr; [3. Klipper on the SBC](klipper_install.md) &rarr; [4. Printer display](klipperscreen-viewer-app/README.md) (optional) &middot; [Repository overview](README.md)
+[← Repository overview](README.md)
+
+**Tunneled-Klipper setup:** [1. Overview](tunneled-klipper.md) → **2. SBC setup** → [3. Klipper on SBC](klipper_install.md) → [4. Printer display](klipperscreen-viewer-app/README.md) *(optional)*
 
 This tutorial explains how to set up a Raspberry Pi 4/5, Compute Module 4/5, Zero 2 W, or BTT Pi2 (BigTreeTech CB2) and prepare it as a USB Serial Bridge (e.g., for Klipper).
 

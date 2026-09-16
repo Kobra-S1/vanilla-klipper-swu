@@ -1,6 +1,6 @@
 # Vanilla Klipper App for Rinkhals on supported Anycubic Kobra printers, with ACE Pro multi-color support
 
-> **Vanilla-Klipper** &middot; [Repository overview](README.md)
+[← Repository overview](README.md)
 
 <p align="center">
   <img src="images/Klipper-logo.png" alt="Overview" width="30%">

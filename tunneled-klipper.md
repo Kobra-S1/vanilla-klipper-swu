@@ -1,6 +1,8 @@
 # Tunneled-Klipper App for Rinkhals on supported Anycubic Kobra printers
 
-> **Tunneled-Klipper setup:** **1. Overview and printer app** &rarr; [2. SBC setup](SetupRaspberryPiTunnel.md) &rarr; [3. Klipper on the SBC](klipper_install.md) &rarr; [4. Printer display](klipperscreen-viewer-app/README.md) (optional) &middot; [Repository overview](README.md)
+[← Repository overview](README.md)
+
+**Tunneled-Klipper setup:** **1. Overview** → [2. SBC setup](SetupRaspberryPiTunnel.md) → [3. Klipper on SBC](klipper_install.md) → [4. Printer display](klipperscreen-viewer-app/README.md) *(optional)*
 
 The **tunneled-klipper** app forwards the printer's MCUs serial interface connections to an SBC which supports OTG USB serial gadget mode (for example Raspberry Pi 4/5, Compute Module 4/5, Zero 2 W, or BTT Pi2).
 This lets you run Klipper on the external SBC while the tunneled-klipper APP (running on the Kobra printers SoC, hosted by Rinkhals) acts as a serial bridge to the MCUs.
@@ -81,7 +83,7 @@ hardware and are only for people comfortable with that.
 |---|---|---|---|
 | **USB OTG serial gadget, external SBC** | Plug a USB cable between printer and SBC | Low - no disassembly, fully reversible | Yes, this guide |
 | **USB OTG serial gadget, SBC mounted inside the printer** | Same software setup, SBC housed in the printer and powered from it | Low to medium - case work and power wiring | Software side, yes |
-| **[LAN tunnel](https://github.com/moosbewohner/Kobra-S1-Lan-Tunnel) to an external SBC** | Forward the MCU serial links over TCP instead of USB, using a separate Rinkhals app | Medium | Separate project |
+| **[LAN tunnel](https://github.com/moosbewohner/Kobra-S1-Lan-Tunnel) to an external SBC** | Forward the MCU serial links over TCP instead of USB, using a separate Rinkhals app | Low, if you use a LAN USB dongle on the printer | Separate project |
 | **Direct UART wiring to the SBC GPIO header** | Move the MCU RX/TX pairs off the SoC board onto two SBC UARTs | High - rewiring, and the SoC software has to be neutered | No, notes below |
 | **Full board swap** | Replace the MCU driver board and the SoC board with a Klipper board, keep only the toolhead MCU board, plus a display solution | Highest | No |
 
