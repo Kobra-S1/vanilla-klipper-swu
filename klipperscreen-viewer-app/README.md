@@ -51,6 +51,7 @@ sudo ./rpi-setup.sh --profile ks1
 Example profiles:
 - `ks1`
 - `ks1m`
+- `kx` (Kobra X, 480x320; no Rinkhals package above - used by Kobrian's viewer screen)
 - `k3`
 - `k3v2`
 - `k2p`

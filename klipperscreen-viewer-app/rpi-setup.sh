@@ -25,7 +25,7 @@ usage() {
 Usage: sudo bash rpi-setup.sh [options]
 
 Options:
-  --profile <name>         One of: ks1, ks1m, k3, k3v2, k2p, k3m
+  --profile <name>         One of: ks1, ks1m, kx, k3, k3v2, k2p, k3m
   --printer-model <name>   Alias for --profile
   --width <pixels>         Override VNC width
   --height <pixels>        Override VNC height
@@ -39,6 +39,7 @@ Options:
 Examples:
   sudo bash rpi-setup.sh --profile ks1
   sudo bash rpi-setup.sh --profile k3
+  sudo bash rpi-setup.sh --profile kx
   sudo bash rpi-setup.sh --width 480 --height 272 --rotation 270 --depth 16 --quality 5 --compress 7
 EOF
 }
@@ -63,6 +64,14 @@ apply_profile() {
             WIDTH=800
             HEIGHT=480
             VIEWER_ROTATION=180
+            ;;
+        kx)
+            # Kobra X: 480x320 landscape panel, mounted upright (Kobrian's
+            # boards/kx.conf: BOARD_PANEL=480x320, BOARD_PANEL_ROTATION=0).
+            PROFILE="$1"
+            WIDTH=480
+            HEIGHT=320
+            VIEWER_ROTATION=0
             ;;
         k3m)
             PROFILE="$1"
