@@ -1,5 +1,7 @@
 # ⚙️ Klipper Installation on Raspberry Pi (Vanilla Klipper Tunnel)
 
+> **Tunneled-Klipper setup:** [1. Overview and printer app](tunneled-klipper.md) &rarr; [2. SBC setup](SetupRaspberryPiTunnel.md) &rarr; **3. Klipper on the SBC** &rarr; [4. Printer display](klipperscreen-viewer-app/README.md) (optional) &middot; [Repository overview](README.md)
+
 This guide explains how to install **Klipper** on a **Raspberry Pi** using **KIAUH** and switch to the **Kobra S1 repository**.
 
 ---

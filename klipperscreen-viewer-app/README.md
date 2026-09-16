@@ -1,5 +1,7 @@
 # KlipperScreen Viewer
 
+> **Tunneled-Klipper setup:** [1. Overview and printer app](../tunneled-klipper.md) &rarr; [2. SBC setup](../SetupRaspberryPiTunnel.md) &rarr; [3. Klipper on the SBC](../klipper_install.md) &rarr; **4. Printer display** (optional) &middot; [Repository overview](../README.md)
+
 Standalone Rinkhals app that displays a remote KlipperScreen VNC session on the
 printer touchscreen and forwards touch input back to the VNC server.
 

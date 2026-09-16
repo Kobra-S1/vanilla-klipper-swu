@@ -1,24 +1,8 @@
 # 🥧 Raspberry Pi / Raspberry Pi Zero 2 W / BTT Pi2 — Setup Tunnel Tutorial
 
+> **Tunneled-Klipper setup:** [1. Overview and printer app](tunneled-klipper.md) &rarr; **2. SBC setup** &rarr; [3. Klipper on the SBC](klipper_install.md) &rarr; [4. Printer display](klipperscreen-viewer-app/README.md) (optional) &middot; [Repository overview](README.md)
+
 This tutorial explains how to set up a Raspberry Pi 4/5, Compute Module 4/5, Zero 2 W, or BTT Pi2 (BigTreeTech CB2) and prepare it as a USB Serial Bridge (e.g., for Klipper).
-
----
-
-## 📑 Table of Contents
-
-* [📦 Requirements](#-requirements)
-* [🖼 Step 1 – Write Image](#-step-1--write-image)
-* [⚙️ Step 2 – Configure Setup](#-step-2--configure-setup)
-* [🔐 Step 3 – Enable SSH](#-step-3--enable-ssh)
-* [⚡ Step 4 – Boot the Pi](#-step-4--boot-the-pi)
-* [2️⃣ Copy the Installation Script](#2️⃣-copy-the-installation-script-to-your-pi)
-* [3️⃣ Start SSH Connection](#3️⃣-start-your-ssh-connection)
-* [4️⃣ Switch to Superuser Mode](#4️⃣-switch-to-superuser-mode)
-* [5️⃣ Make the Script Executable](#5️⃣-make-the-script-executable)
-* [6️⃣ Start the Installation](#6️⃣-start-the-installation)
-* [7️⃣ Install KIAUH](#7️⃣-install-kiauh)
-* [8️⃣ Modify Klipper Start Script](#8️⃣-modify-klipper-start-script)
-* [✅ Done](#✅-done)
 
 ---
 
@@ -49,7 +33,7 @@ Official BTT CB2 image releases:
 
 ---
 
-## ⚙️ Step 2 – Configure Setup
+## 🧰 Step 2 – Configure Setup
 
 ![Rasp\_imager2](images/Rasp_imager2.jpg)
 
@@ -77,7 +61,7 @@ Save the settings and write the image to the SD card. Your **SD card is now read
 
 ---
 
-## 5️⃣ Start Your SSH Connection
+## 🔌 Step 5 – Start Your SSH Connection
 
 Use an SSH client (e.g. **PuTTY**, **MobaXterm**, or **Terminal**) to connect to your SBC:
 
@@ -87,7 +71,7 @@ ssh <USER>@<SBC-IP-ADDRESS>
 
 ---
 
-## 6️⃣ Download and Run the Installation Script
+## 📥 Step 6 – Download and Run the Installation Script
 
 Download and execute the **[`setup_tunnel_klipper.sh`](setup_tunnel_klipper.sh)** script directly on your SBC:
 
@@ -128,7 +112,7 @@ Ansible note: the Ansible setup in this repository is currently not updated for 
 
 ---
 
-## 7️⃣ Install KIAUH
+## 🧩 Step 7 – Install KIAUH
 
 After the installation and execution of setup_tunnel_klipper.sh, **KIAUH** will automatically start.
 
@@ -142,7 +126,7 @@ Choose one of the following options:
 ---
 
 
-## 8️⃣ Modify Klipper Start Script
+## 🔧 Step 8 – Modify the Klipper Start Script
 
 To avoid spurious issues with klippy connecting to the S1 MCUs after reboot, add these two lines into your /etc/systemd/system/klipper.service file (above ExecStart=/home/pi/klippy-env/bin/python $KLIPPER_ARGS):
 ```

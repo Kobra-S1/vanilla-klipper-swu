@@ -1,9 +1,12 @@
-# Vanilla Klipper App for Rinkhals on Anycubic Kobra S1, Kobra 3 / Kobra 3v2 with ACE-Pro Multicolor support
+# Vanilla Klipper App for Rinkhals on supported Anycubic Kobra printers, with ACE Pro multi-color support
+
+> **Vanilla-Klipper** &middot; [Repository overview](README.md)
+
 <p align="center">
   <img src="images/Klipper-logo.png" alt="Overview" width="30%">
 </p>
 
-This README explains how to install and enable the **vanilla Klipper (VK)** app on the Anycubic Kobra S1 or K3 running **Rinkhals**.
+This README explains how to install and enable the **vanilla Klipper (VK)** app on a [supported Anycubic Kobra printer](README.md#supported-printers) running **Rinkhals**.
 
 ---
 
@@ -11,24 +14,18 @@ This README explains how to install and enable the **vanilla Klipper (VK)** app 
 - Some hardware features do **not work** with VK, e.g. filament movement sensor for tangle detection
 - Some features work **only when using tunneled-klipper with an RPi4** (e.g., LIS2DW12 resonance testing due to lack of required python packages in Rinkhals provided environment).  
 - For the app running directly on the printer Host: It's mostly accessible only via the **Mainsail web interface** (only very limited functionality usable via Anycubics UI on the printer display).  
-- I recommend using a non-test Rinkhals version for initial installation, as with the latest changes in Rinkhals some changes broke the proper integration with VK (e.g. sending/starting a print fails).
 
 ---
 
 ## 📋 Preconditions
 
-- Anycubic Kobra S1 (**KS1**) or K3 with **Rinkhals** already installed and running
+- A [supported Anycubic Kobra printer](README.md#supported-printers) with **Rinkhals** already installed and running
 - Update file from **[Releases folder](releases/)**
   ```
   app-vanilla-klipper-ks1.swu
   ```
-  This documentation explains the installation based on KS1, for K3 look for the corresponding file or directory with K3 in its name.
-
-## ⚠️ WARNING
-- The vanilla-klipper app built on the official Rinkhals GitHub currently does not work properly ("Error 22" can be shown on the printers display at startup), hence use the ones from this GitHub here until that is fixed. If you get this error, use rinkhals installer.swu to uninstall rinkhals fully (will also uninstall the APPs).
-After re-installing rinkhals, delete via mainsail "printer.klipper.cfg" if its still there from previous installation try. Then re-try APP installation with the SWU from this repo here.
-
-Also: Use for now the last release Rinkhals (not test version). Currently (end of December 2025) the test version includes moonraker changes which break the ability to upload GCode files to vanilla-klipper or does not start the print with them (can't open gcode file error).
+  This documentation uses the KS1 file names throughout. For any other model, substitute the matching package suffix and config names from the
+  [supported printers table](README.md#supported-printers).
 
 ---
 
@@ -54,7 +51,7 @@ Also: Use for now the last release Rinkhals (not test version). Currently (end o
 
 3. **Open the Rinkhals App Menu**
    ```
-   Settings → General → Rinkhals → Manage apps
+   Settings → Rinkhals → Manage apps
    ```
    You should now see **vanilla-klipper** listed.
 
@@ -96,16 +93,16 @@ Resonance calibration is not possible due to missing numpy module on the printer
 
 ## ⏳ ACE Pro Support
 To enable support for multi-color/multi material ACE-Pro unit, make sure the ACE Pro(s) are connected to the printer (same setup as with stock firmware).
-Then open the **ace_ks1.cfg** file on your printer (or the **ace_k3.cfg** for Kobra 3 printers), and check in the [ace] section if the 'ace_count' number matches the number of connected ACE-Pro units.
+Then open the **ace_KS1.cfg** file on your printer (or the file matching your printer model, e.g. **ace_K3.cfg**), and check in the [ace] section if the 'ace_count' number matches the number of connected ACE Pro units.
 Default is set to one ACE:
 
 ```
 [ace]
 ace_count: 1
-baud: 115200
+baud: auto            # auto = 115200 for ACE1, 230400 for ACE2 - always correct
 ```
 
-There is no 'soft' limit for the number of ACE Pro units to use (stock firmware limits to two units max), so you can also use e.g. 3 or 4 here to enable 12 or 16 color printing (you need to come up with a matching 12-in-1 or 16-in-1 filament hub though to connect so many PTFE tubes to the printer).
+The driver itself imposes no limit (stock firmware caps at two units), so `ace_count` can be raised beyond that. The hardware daisy chain sets the real limit: up to 3 ACE Pro (Gen 1) units, plus up to 4 ACE Pro 2 units chained behind the last Gen 1 unit - a maximum of 7 units, or 28 colors. You need a matching filament hub to connect that many PTFE tubes to the printer.
 
 
 To finally let klipper use the ace driver, locate in the **printer.cfg** file the commented out ace include and enable it (remove the #):
@@ -131,21 +128,23 @@ ACE[0]: {'id': 1, 'code': 0, 'result': {'id': 1, 'slots': 4, 'model': 'Anycubic 
 
 With VK running on SoC there is currently no way to configure the spools, etc. via display, so console commands must be used to control and configure the ACE-Pro:
 ```
-ACE_GET_STATUS: Query ACE status. INSTANCE= or TOOL=
-ACE_RECONNECT: Reconnect ACE serial. INSTANCE=
+ACE_GET_STATUS: Query ACE status. INSTANCE= or TOOL=, VERBOSE=1 for detailed output
+ACE_GET_CONNECTION_STATUS: Get connection status for all ACE instances (connected, stable, retry info)
+ACE_RECONNECT: Reconnect ACE serial. INSTANCE= DELAY=5
+ACE_REDETECT: Re-detect an instance mis-typed at startup (e.g. late ACE2 adapter). Discovery-gated, safe.
 ACE_GET_CURRENT_INDEX: Query currently loaded tool index
-ACE_FEED: Feed filament. T= or INSTANCE= INDEX=, LENGTH=, [SPEED=]
-ACE_STOP_FEED: Stop feeding. T= or INSTANCE= INDEX=
-ACE_RETRACT: Retract filament. T= or INSTANCE= INDEX=, LENGTH=, [SPEED=]
-ACE_STOP_RETRACT: Stop retraction. T= or INSTANCE= INDEX=
-ACE_SMART_UNLOAD: Unload filament, tries also other filament slots if sensor still triggers after unload of current tool [TOOL=]
+ACE_FEED: Feed filament. T=<tool> or INSTANCE= INDEX=, LENGTH=, [SPEED=]
+ACE_STOP_FEED: Stop feeding. T=<tool> or INSTANCE= INDEX=
+ACE_RETRACT: Retract filament. T=<tool> or INSTANCE= INDEX=, LENGTH=, [SPEED=]
+ACE_STOP_RETRACT: Stop retraction. T=<tool> or INSTANCE= INDEX=
+ACE_SMART_UNLOAD: Unload filament, trys also other filament slots if sensor still triggers after unload of current tool [TOOL=]
 ACE_SMART_LOAD: Load all non-empty slots to verification sensor.
-ACE_SET_SLOT: Set slot: T= or INSTANCE= INDEX=, COLOR=R,G,B MATERIAL= TEMP= or EMPTY=1
+ACE_SET_SLOT: Set slot: T=<tool> or INSTANCE= INDEX=, COLOR=<name>|R,G,B MATERIAL= TEMP= or EMPTY=1
 ACE_SAVE_INVENTORY: Save inventory. INSTANCE=
 ACE_START_DRYING: Start dryer. [INSTANCE=] TEMP= [DURATION=240]
 ACE_STOP_DRYING: Stop dryer. [INSTANCE=]
-ACE_ENABLE_FEED_ASSIST: Enable feed assist. T= or INSTANCE= INDEX=
-ACE_DISABLE_FEED_ASSIST: Disable feed assist. T= or INSTANCE= INDEX=
+ACE_ENABLE_FEED_ASSIST: Enable feed assist. T=<tool> or INSTANCE= INDEX=
+ACE_DISABLE_FEED_ASSIST: Disable feed assist. T=<tool> or INSTANCE= INDEX=
 ACE_SET_PURGE_AMOUNT: Set purge parameters. PURGELENGTH= PURGESPEED= [INSTANCE=]
 ACE_QUERY_SLOTS: Query slots. INSTANCE= (omit to query all)
 ACE_ENABLE_ENDLESS_SPOOL: Enable endless spool
@@ -154,18 +153,26 @@ ACE_ENDLESS_SPOOL_STATUS: Query endless spool status.
 ACE_ENABLE_RFID_SYNC: Enable RFID inventory sync. [INSTANCE=] optional
 ACE_DISABLE_RFID_SYNC: Disable RFID inventory sync. [INSTANCE=] optional
 ACE_DEBUG: Send debug request to device. INSTANCE= METHOD= [PARAMS=]
-ACE_DEBUG_SENSORS: Print all sensor states (toolhead, RMS, path-free)
+ACE_DEBUG_SENSORS: Print all sensor states (toolhead, RDM, path-free)
 ACE_DEBUG_STATE: Print manager and instance state information
 ACE_RESET_PERSISTENT_INVENTORY: Reset inventory to empty. INSTANCE=
+ACE_RESET_SHARED_BUS_BINDINGS: Clear persisted ACE2 shared-bus bindings. [RECONNECT=1|0] [DELAY=2.0]
+ACE_CLEANUP_STALE_VARS: List stale ACE saved variables; CONFIRM=1 deletes them (incl. old inventories)
 ACE_RESET_ACTIVE_TOOLHEAD: Reset active toolhead state. INSTANCE=
+ACE_DEBUG_SET_CURRENT_INDEX: Override saved tool index. TOOL=<n> (0-based) or TOOL=-1 for no tool loaded
+ACE_DEBUG_SET_TARGET_INDEX: Override saved in-flight toolchange target. TOOL=<n> (0-based) or TOOL=-1 for none
+ACE_DEBUG_SET_FILAMENT_STATE: Override saved filament position. STATE=bowden|splitter|toolhead|nozzle (omit STATE= to query)
 ACE_RFID_SYNC_STATUS: Query RFID sync status. [INSTANCE=]
-ACE_SET_ENDLESS_SPOOL_MODE: Set endless spool match mode. MODE=exact|material
+ACE_DEBUG_INJECT_SENSOR_STATE: Inject sensor state for testing. TOOLHEAD=0/1 RDM=0/1 or RESET=1
+ACE_SET_ENDLESS_SPOOL_MODE: Set endless spool match mode. MODE=exact|material|next
 ACE_GET_ENDLESS_SPOOL_MODE: Query current match mode
-ACE_CHANGE_TOOL: Change tool or unload. TOOL= or TOOL=-1
-ACE_SET_RETRACT_SPEED: Command to update retract speed. T= or INSTANCE= INDEX=, SPEED=
-ACE_SET_FEED_SPEED: Command to update feed speed. T= or INSTANCE= INDEX=, SPEED=
-ACE_FULL_UNLOAD: Full unload until slot empty. TOOL= or TOOL=ALL or [no TOOL=current]
-ACE_SHOW_INSTANCE_CONFIG: Show resolved config for ACE instance(s). [INSTANCE=]
+ACE_CHANGE_TOOL: Change tool or unload. TOOL=<index> or TOOL=-1
+ACE_SET_RETRACT_SPEED: Command to update retract speed. T=<tool> or INSTANCE= INDEX=, SPEED=
+ACE_SET_FEED_SPEED: Command to update feed speed. T=<tool> or INSTANCE= INDEX=, SPEED=
+ACE_FULL_UNLOAD: Full unload until slot empty. TOOL=<index> or TOOL=ALL or [no TOOL=current]
+ACE_SHOW_INSTANCE_CONFIG: Show resolved config for ACE instance(s). [INSTANCE=<num>]
+ACE_FLUSH: Persist any pending variable changes to disk immediately
+ACE_TANGLE_DETECTION: Toggle tangle detection live.  ENABLE=0/1 (no arg → query state)
 ```
 ---
 
