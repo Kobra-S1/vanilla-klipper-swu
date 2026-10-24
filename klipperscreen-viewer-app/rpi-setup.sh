@@ -330,7 +330,10 @@ Group=$USER_GROUP
 ExecStart=/usr/local/bin/klipperscreen-vnc.sh
 Restart=on-failure
 RestartSec=5
-KillMode=process
+# Stop takes Xtigervnc and KlipperScreen down with the wrapper: a restart
+# that lands before the wrapper's trap is set otherwise leaves both running,
+# and the next start fails on the taken display.
+KillMode=control-group
 
 [Install]
 WantedBy=multi-user.target
