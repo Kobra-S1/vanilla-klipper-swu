@@ -110,6 +110,19 @@ Expected after successful setup: `Active: active (exited)`.
 
 If startup fails (for example no UDC available yet), `ports.service` retries automatically with a short delay.
 
+### USB network link
+
+Besides the two serial ports (`/dev/ttyGS0`, `/dev/ttyGS1`), the gadget carries a network link on the same cable: `usb0` on the SBC, with the fixed address `10.55.0.1/30`, which `/opt/ports.sh` sets each time it starts the gadget. A printer running Kobrian uses it as `10.55.0.2` - its screen reaches Moonraker over the cable instead of WiFi. Printers on stock firmware ignore it.
+
+Check after a reboot:
+
+```bash
+ip -br addr show usb0        # 10.55.0.1/30
+ping -c 3 10.55.0.2          # once a Kobrian printer is connected
+```
+
+Setups from before this change had a third, unused serial port; running the script again replaces it with the network link. Both take the same USB endpoints, so every SBC that ran the old setup can run this one.
+
 Ansible note: the Ansible setup in this repository is currently not updated for BTT Pi2 or Raspberry Pi Zero 2 W and supports only Raspberry Pi 4/5.
 
 ---
