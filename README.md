@@ -70,7 +70,7 @@ reference configs ship in `releases/*/config/` for anyone who wants to help test
 | Setup effort | flash one `.swu` | flash one `.swu` + full SBC install |
 | Control via | Mainsail / Fluidd web UI | Mainsail / Fluidd web UI |
 | Printer display | very limited (a few functions still work) | full KlipperScreen, via the Viewer app |
-| Resonance testing (LIS2DW12) | no - numpy is missing in the Rinkhals Python env | yes |
+| Resonance testing (LIS2DW12) | yes, with app version 1.3.0 or newer from the Rinkhals App Store (no numpy needed), not yet with the builds in `releases/` | yes |
 | Adaptive bed mesh | yes | yes |
 | ACE Pro multi-color | yes | yes |
 | CPU / RAM headroom | limited by the printer SoC | whatever the SBC offers |
@@ -107,10 +107,13 @@ On a reinstall or update, Rinkhals does **not** overwrite configuration files
 that already exist on the printer. Compare them against the `config/` folder of
 the release you are installing and merge the changes you need by hand.
 
-**Not in the Rinkhals App Store yet.** A listing pull request is open
-([rinkhals-community/Rinkhals.Apps#22](https://github.com/rinkhals-community/Rinkhals.Apps/pull/22))
-but has not been merged, so for now install the `.swu` files from `releases/`
-by hand, as described in the install guides below.
+**Also in the Rinkhals App Store.** The apps were added to the store in
+[rinkhals-community/Rinkhals.Apps#44](https://github.com/rinkhals-community/Rinkhals.Apps/pull/44)
+(which carried over
+[#22](https://github.com/rinkhals-community/Rinkhals.Apps/pull/22)), so they can
+be installed from the store on the printer, or by hand from the `.swu` files in
+`releases/` as described in the install guides below. The store builds can be
+newer than the ones in `releases/`.
 
 ---
 

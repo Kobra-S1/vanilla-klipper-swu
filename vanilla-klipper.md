@@ -88,7 +88,21 @@ So you can still initiate via display:
 
 Note: ACE Pro panels won't work properly though (even if they still show, now outdated, spool data), as now the ACEPRO driver is needed to communicate to the ACEPro(s)
 
-Resonance calibration is not possible due to missing numpy module on the printer. You can though re-use the value you measured under go-klipper, by extracting the measured resonance values from mutable configuration file on the printer and transfer the measured values for vanilla-klipper in the printer.klipper.cfg file.
+### Resonance calibration (input shaper)
+
+With app version **1.3.0 or newer from the Rinkhals App Store**, resonance calibration works on the printer, using its built-in LIS2DW12 accelerometer. Klipper normally needs the numpy module for this, which the printer doesn't have; the app ships a small compiled program (`shaper-calibrate`) that does the same calculation instead.
+
+With the printer idle (**never during a print**):
+
+```
+G28
+SHAPER_CALIBRATE
+SAVE_CONFIG
+```
+
+`SHAPER_CALIBRATE` shakes each axis through a range of frequencies, which takes a few minutes and is loud, then prints the recommended `shaper_type` and `shaper_freq` for X and Y. `SAVE_CONFIG` stores them in printer.klipper.cfg and restarts Klipper. `TEST_RESONANCES` and `MEASURE_AXES_NOISE` work as well. This is tested on the Kobra S1; the Kobra 3 and Kobra 3 Max (two accelerometers) are untested so far.
+
+The builds in `releases/` up to 2026-06-01 don't include this yet. With those, resonance calibration is not possible due to the missing numpy module, but you can re-use the values measured under go-klipper, by extracting them from the mutable configuration file on the printer (`/userdata/app/gk/printer_mutable.cfg`, section `input_shaper`) and putting them into the printer.klipper.cfg file.
 ---
 
 ## ⏳ ACE Pro Support
